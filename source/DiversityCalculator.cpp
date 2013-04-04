@@ -1137,7 +1137,10 @@ bool DiversityCalculator::All(double threshold, const std::string& outputFile)
 	std::vector<std::string> calculatorLabels;
 
 	// calculate all weighted (quantitative) measures
-	m_dataVec.Init(m_tree, m_bPhylogenetic, true, !m_bCount, m_seqCountIO.GetSeqs());
+	bool bGood = m_dataVec.Init(m_tree, m_bPhylogenetic, true, !m_bCount, m_seqCountIO.GetSeqs());
+	if(!bGood)
+		return false;
+
 	std::set<std::string>::iterator weightedIter;
 	m_bWeighted = true;
 	for(weightedIter = m_weightedCalculators.begin(); weightedIter != m_weightedCalculators.end(); ++weightedIter)

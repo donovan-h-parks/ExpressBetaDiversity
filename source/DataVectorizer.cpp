@@ -51,17 +51,24 @@ bool DataVectorizer::Init(Tree<Node>* tree, bool bPhylogenetic, bool bWeighted, 
 		}
 
 		// assign sequence index for each node
+		bool bMissingSeqs = false;
 		for(uint i = 0; i < seqs.size(); ++i)
 		{
 			std::map<std::string, Node*>::iterator it = leafMap.find(seqs[i]);
 			if(it == leafMap.end())
 			{
-				std::cout << "Failed to find sequence '" << seqs[i] << "' in tree." << std::endl;
-				return false;
-			}
+				if(!bMissingSeqs)
+					std::cout << "[Error] Failed to find the following sequences in the input tree:" << std::endl;
 
-			it->second->SetSeqIndex(i);
+				bMissingSeqs = true;
+				std::cout << seqs[i] << std::endl;
+			}
+			else
+				it->second->SetSeqIndex(i);
 		}
+
+		if(bMissingSeqs)
+			return false;
 
 		// check that all leaf nodes have been assigned a sequence index and set the post-order
 		// traversal index for each node

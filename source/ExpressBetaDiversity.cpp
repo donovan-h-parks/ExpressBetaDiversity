@@ -201,6 +201,10 @@ int main(int argc, char* argv[])
 	if(bAll)
 	{
 		DiversityCalculator calculator(seqCountFile, treeFile, "", maxDataVecs, false, false, bStrictMRCA, bCount, bVerbose);
+
+		if(!calculator.IsGood())
+			return -1;
+
 		calculator.All(threshold, outputFile);
 		return 0;
 	}
