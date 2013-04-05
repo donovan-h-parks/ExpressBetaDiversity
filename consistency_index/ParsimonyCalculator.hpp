@@ -60,7 +60,7 @@ class ParsimonyCalculator
 {
 public:
 	/** Constructor. */
-	ParsimonyCalculator() {}
+	ParsimonyCalculator(): m_parsimonyScore(1) {}
 
 	/** Destructor. */
 	~ParsimonyCalculator() {}
@@ -72,7 +72,10 @@ public:
 	 * @param tree Tree to calculate parsimony scores for.
 	 * @param attributeMap Indicates attribure for each leaf node.
 	 */
-	uint Calculate(Tree<Node>* tree, std::map<std::string, std::string>& attributeMap);
+	void Run(Tree<Node>* tree, std::map<std::string, std::string>& attributeMap);
+
+	int Score() const { return m_parsimonyScore; }
+	float Consistency() const;
 
 protected:
 	/** Propagate parsimony scores up tree.*/
@@ -81,9 +84,17 @@ protected:
 	/** Propagate most parsimonious character states down tree. */
 	void CalculateDown(Tree<Node>*  tree, const std::vector<std::string>& characters);
 
+	bool IsMissingData(const std::string& character);
+
 protected:
 	/** Parsimony data for each node (indexed by node id). */
 	std::map<uint, ParsimonyData> m_parsimonyData;	
+
+	/** Unique character set. */
+	std::set<std::string> m_uniqueCharacters;
+
+	/** Calculate parsimony score.*/
+	int m_parsimonyScore;
 };
 
 #endif

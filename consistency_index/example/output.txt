@@ -1,4 +1,1 @@
-Attribute 1	0.5
-Attribute 2	0.5
-Attribute 3	0
-Attribute 4	1
+Attribute 1	2	0.5

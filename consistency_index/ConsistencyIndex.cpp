@@ -24,7 +24,6 @@ int main(int argc, char *argv[])
 	newickIO.Read(inputTree, inputTreeFile);
 
 	// read attribute map		
-	std::vector<std::set<std::string> > uniqueAttributes;
 	std::vector<std::map<std::string, std::string> > attributeMaps;
 	std::vector<std::string> attributes;
 
@@ -50,19 +49,11 @@ int main(int argc, char *argv[])
 			continue;
 		}
 
-		if(uniqueAttributes.empty())
-		{
-			uniqueAttributes.resize(tokens.size()-1);
+		if(attributeMaps.empty())
 			attributeMaps.resize(tokens.size()-1);
-		}
 
 		for(uint i = 1; i < tokens.size(); ++i)
-		{
-			if(!tokens.at(i).empty() && tokens.at(i) != "-" && tokens.at(i) != "NA" && tokens.at(i) != "N/A" && tokens.at(i) != "X")
-				uniqueAttributes.at(i-1).insert(tokens.at(i));
-
 			attributeMaps.at(i-1)[tokens[0]] = tokens.at(i);
-		}
 	}
 	fin.close();
 
@@ -71,10 +62,10 @@ int main(int argc, char *argv[])
 	for(uint i = 0; i < attributeMaps.size(); ++i)
 	{
 		ParsimonyCalculator pc;
-		uint parsimony = pc.Calculate(inputTree, attributeMaps.at(i));
+		pc.Run(inputTree, attributeMaps.at(i));
 
 		// output consistency
-		fout <<	attributes.at(i) << '\t' << float(uniqueAttributes.at(i).size() - 1) / parsimony << std::endl;
+		fout <<	attributes.at(i) << '\t' << pc.Score() << '\t' << pc.Consistency() << std::endl;
 	}
 	fout.close();
 

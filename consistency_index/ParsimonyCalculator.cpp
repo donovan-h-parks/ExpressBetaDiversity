@@ -21,20 +21,39 @@
 
 #include "ParsimonyCalculator.hpp"
 
+#include <iterator>
+
 using namespace std;
 
-uint ParsimonyCalculator::Calculate(Tree<Node>* tree, map<string, string>& attributeMap)
+float ParsimonyCalculator::Consistency() const 
+{ 
+	if(m_parsimonyScore == 0)
+		return 1.0f;
+
+	return float(m_uniqueCharacters.size() - 1) / m_parsimonyScore; 
+}
+
+bool ParsimonyCalculator::IsMissingData(const std::string& character)
+{
+	if(character.empty() || character == "-" || character == "NA" || character == "N/A" || character == "X")
+		return true;
+
+	return false;
+}
+
+void ParsimonyCalculator::Run(Tree<Node>* tree, map<string, string>& attributeMap)
 {
 	// get unique characters within this field
-	set<string> uniqueCharacters;
+	m_uniqueCharacters.clear();
 	map<string, string>::const_iterator it;
 	for(it = attributeMap.begin(); it != attributeMap.end(); ++it)
-		uniqueCharacters.insert(it->second);
+	{
+		if(!IsMissingData(it->second))
+			m_uniqueCharacters.insert(it->second);
+	}
 
 	vector<string> characters;
-	set<string>::iterator it2;
-	for(it2=uniqueCharacters.begin() ; it2 != uniqueCharacters.end(); it2++)
-		characters.push_back(*it2);
+	std::copy(m_uniqueCharacters.begin(), m_uniqueCharacters.end(), std::back_inserter(characters));
 
 	// initialize leaf nodes
 	vector<Node*> leaves = tree->GetLeaves();
@@ -45,15 +64,27 @@ uint ParsimonyCalculator::Calculate(Tree<Node>* tree, map<string, string>& attri
 		ParsimonyData parsimonyData;
 		parsimonyData.nodeScore = 0;
 
-		for(uint i = 0; i < characters.size(); ++i)
-		{
-			parsimonyData.characterScores[characters.at(i)].score = INT_MAX;
-			parsimonyData.characterScores[characters.at(i)].bPresent = false;
-		}
-	
 		string character = attributeMap[leaf->GetName()];
-		parsimonyData.characterScores[character].score = 0;
-		parsimonyData.characterScores[character].bPresent = true;
+		if(!IsMissingData(character))
+		{
+			for(uint i = 0; i < characters.size(); ++i)
+			{
+				parsimonyData.characterScores[characters.at(i)].score = INT_MAX;
+				parsimonyData.characterScores[characters.at(i)].bPresent = false;
+			}
+
+			parsimonyData.characterScores[character].score = 0;
+			parsimonyData.characterScores[character].bPresent = true;
+		}
+		else
+		{
+			// missing data is the same as allowing any character state at a leaf node
+			for(uint i = 0; i < characters.size(); ++i)
+			{
+				parsimonyData.characterScores[characters.at(i)].score = 0;
+				parsimonyData.characterScores[characters.at(i)].bPresent = true;
+			}
+		}
 
 		m_parsimonyData[leaf->GetId()] = parsimonyData;
 	}
@@ -64,7 +95,7 @@ uint ParsimonyCalculator::Calculate(Tree<Node>* tree, map<string, string>& attri
 	// Propagate most parsimonious character states down tree.
 	CalculateDown(tree, characters);
 
-	return m_parsimonyData[tree->GetRootNode()->GetId()].GetNodeScore();
+	m_parsimonyScore = m_parsimonyData[tree->GetRootNode()->GetId()].GetNodeScore();
 }
 
 void ParsimonyCalculator::CalculateUp(Tree<Node>* tree, const vector<string>& characters)
