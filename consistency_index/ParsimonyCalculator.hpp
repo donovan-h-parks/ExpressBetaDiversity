@@ -75,6 +75,7 @@ public:
 	void Run(Tree<Node>* tree, std::map<std::string, std::string>& attributeMap);
 
 	int Score() const { return m_parsimonyScore; }
+	int NumUniqueCharacters() const { return m_uniqueCharacters.size(); }
 	float Consistency() const;
 
 protected:

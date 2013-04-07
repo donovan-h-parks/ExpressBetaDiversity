@@ -59,13 +59,14 @@ int main(int argc, char *argv[])
 
 	// calculate consistency index for each attribute
 	std::ofstream fout(outputFile.c_str());
+	fout << "Attribute\tConsistency Score\tUnique States\tConsistency Index" << std::endl;
 	for(uint i = 0; i < attributeMaps.size(); ++i)
 	{
 		ParsimonyCalculator pc;
 		pc.Run(inputTree, attributeMaps.at(i));
 
 		// output consistency
-		fout <<	attributes.at(i) << '\t' << pc.Score() << '\t' << pc.Consistency() << std::endl;
+		fout <<	attributes.at(i) << '\t' << pc.Score() << '\t' << pc.NumUniqueCharacters() << '\t' << pc.Consistency() << std::endl;
 	}
 	fout.close();
 
