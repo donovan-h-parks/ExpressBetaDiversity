@@ -114,9 +114,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Bray-Curtis (Sorensen)
 	DiversityCalculator uBC(seqCountFile, "", "Bray-Curtis", 1000, false, false, false, false, false);
-	uBC.Dissimilarity("../unit-tests/temp.txt");
+	uBC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1))
@@ -126,9 +126,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Canberra
 	DiversityCalculator uCanberra(seqCountFile, "", "Canberra", 1000, false, false, false, false, false);
-	uCanberra.Dissimilarity("../unit-tests/temp.txt");
+	uCanberra.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -138,9 +138,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Euclidean
 	DiversityCalculator uEuclidean(seqCountFile, "", "Euclidean", 1000, false, false, false, false, false);
-	uEuclidean.Dissimilarity("../unit-tests/temp.txt");
+	uEuclidean.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], sqrt(3.0)))
 		return false;
 	if(!Compare(dissMatrix[2][0], sqrt(3.0)))
@@ -150,9 +150,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Gower
 	DiversityCalculator uGower(seqCountFile, "", "Gower", 1000, false, false, false, false, false);
-	uGower.Dissimilarity("../unit-tests/temp.txt");
+	uGower.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -162,9 +162,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Soergel
 	DiversityCalculator uSoergel(seqCountFile, "", "Soergel", 1000, false, false, false, false, false);
-	uSoergel.Dissimilarity("../unit-tests/temp.txt");
+	uSoergel.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1))
@@ -174,9 +174,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Kulczynski
 	DiversityCalculator uKulczynski(seqCountFile, "", "Kulczynski", 1000, false, false, false, false, false);
-	uKulczynski.Dissimilarity("../unit-tests/temp.txt");
+	uKulczynski.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1))
@@ -186,9 +186,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Manhattan
 	DiversityCalculator uManhattan(seqCountFile, "", "Manhattan", 1000, false, false, false, false, false);
-	uManhattan.Dissimilarity("../unit-tests/temp.txt");
+	uManhattan.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -198,9 +198,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Pearson
 	DiversityCalculator uPearson(seqCountFile, "", "Pearson", 1000, false, false, false, false, false);
-	uPearson.Dissimilarity("../unit-tests/temp.txt");
+	uPearson.Dissimilarity("../unit-tests/temp", "UPGMA");
 	
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1.57735))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1.57735))
@@ -210,9 +210,9 @@ bool UnitTests::UnweightedSimpleDataMatrix()
 
 	// unweighted Tamas coefficent
 	DiversityCalculator uTC(seqCountFile, "", "Tamas coefficient", 1000, false, false, false, false, false);
-	uTC.Dissimilarity("../unit-tests/temp.txt");
+	uTC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3.0/4.0))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3.0/4.0))
@@ -232,9 +232,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Bray-Curtis (Sorensen)
 	DiversityCalculator uBC(seqCountFile, treeFile, "Bray-Curtis", 1000, false, false, false, false, false);
-	uBC.Dissimilarity("../unit-tests/temp.txt");
+	uBC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1))
@@ -244,9 +244,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Canberra
 	DiversityCalculator uCanberra(seqCountFile, treeFile, "Canberra", 1000, false, false, false, false, false);
-	uCanberra.Dissimilarity("../unit-tests/temp.txt");
+	uCanberra.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -256,9 +256,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Euclidean
 	DiversityCalculator uEuclidean(seqCountFile, treeFile, "Euclidean", 1000, false, false, false, false, false);
-	uEuclidean.Dissimilarity("../unit-tests/temp.txt");
+	uEuclidean.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], sqrt(3.0)))
 		return false;
 	if(!Compare(dissMatrix[2][0], sqrt(3.0)))
@@ -268,9 +268,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Gower
 	DiversityCalculator uGower(seqCountFile, treeFile, "Gower", 1000, false, false, false, false, false);
-	uGower.Dissimilarity("../unit-tests/temp.txt");
+	uGower.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -280,9 +280,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Soergel
 	DiversityCalculator uSoergel(seqCountFile, treeFile, "Soergel", 1000, false, false, false, false, false);
-	uSoergel.Dissimilarity("../unit-tests/temp.txt");
+	uSoergel.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1))
@@ -292,9 +292,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Kulczynski
 	DiversityCalculator uKulczynski(seqCountFile, treeFile, "Kulczynski", 1000, false, false, false, false, false);
-	uKulczynski.Dissimilarity("../unit-tests/temp.txt");
+	uKulczynski.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1))
@@ -304,9 +304,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Manhattan
 	DiversityCalculator uManhattan(seqCountFile, treeFile, "Manhattan", 1000, false, false, false, false, false);
-	uManhattan.Dissimilarity("../unit-tests/temp.txt");
+	uManhattan.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -316,9 +316,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Pearson
 	DiversityCalculator uPearson(seqCountFile, treeFile, "Pearson", 1000, false, false, false, false, false);
-	uPearson.Dissimilarity("../unit-tests/temp.txt");
+	uPearson.Dissimilarity("../unit-tests/temp", "UPGMA");
 	
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1.57735))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1.57735))
@@ -328,9 +328,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted Tamas coefficent
 	DiversityCalculator uTC(seqCountFile, treeFile, "Tamas coefficient", 1000, false, false, false, false, false);
-	uTC.Dissimilarity("../unit-tests/temp.txt");
+	uTC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3.0/4.0))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3.0/4.0))
@@ -340,9 +340,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted MNND
 	DiversityCalculator uMNND(seqCountFile, treeFile, "MNND", 1000, false, false, false, false, false);
-	uMNND.Dissimilarity("../unit-tests/temp.txt");
+	uMNND.Dissimilarity("../unit-tests/temp", "UPGMA");
 	
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -352,9 +352,9 @@ bool UnitTests::UnweightedSimpleTree()
 
 	// unweighted MPD
 	DiversityCalculator uMPD(seqCountFile, treeFile, "MPD", 1000, false, false, false, false, false);
-	uMPD.Dissimilarity("../unit-tests/temp.txt");
+	uMPD.Dissimilarity("../unit-tests/temp", "UPGMA");
 	
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 3))
 		return false;
 	if(!Compare(dissMatrix[2][0], 3))
@@ -371,9 +371,9 @@ bool UnitTests::UnweightedDataMatrixMothur()
 
 	// unweighted Soergel
 	DiversityCalculator uSoergel("../unit-tests/DataMatrixMothur.env", "", "Soergel", 1000, false, false, false, false, false);
-	uSoergel.Dissimilarity("../unit-tests/temp.txt");
+	uSoergel.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.625))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.888889))
@@ -383,9 +383,9 @@ bool UnitTests::UnweightedDataMatrixMothur()
 
 	// unweighted Kulczynski
 	DiversityCalculator uKulczynski("../unit-tests/DataMatrixMothur.env", "", "Kulczynski", 1000, false, false, false, false, false);
-	uKulczynski.Dissimilarity("../unit-tests/temp.txt");
+	uKulczynski.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.45))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.791667))
@@ -395,9 +395,9 @@ bool UnitTests::UnweightedDataMatrixMothur()
 
 	// unweighted Euclidean
 	DiversityCalculator uEuclidean("../unit-tests/DataMatrixMothur.env", "", "Euclidean", 1000, false, false, false, false, false);
-	uEuclidean.Dissimilarity("../unit-tests/temp.txt");
+	uEuclidean.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 2.23607))
 		return false;
 	if(!Compare(dissMatrix[2][0], 2.82843))
@@ -407,9 +407,9 @@ bool UnitTests::UnweightedDataMatrixMothur()
 
 	// unweighted Pearson
 	DiversityCalculator uPearson("../unit-tests/DataMatrixMothur.env", "", "Pearson", 1000, false, false, false, false, false);
-	uPearson.Dissimilarity("../unit-tests/temp.txt");
+	uPearson.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1.0))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1.58333))
@@ -419,9 +419,9 @@ bool UnitTests::UnweightedDataMatrixMothur()
 
 	// unweighted Bray-Curtis (aka, Sorensen)
 	DiversityCalculator uBC("../unit-tests/DataMatrixMothur.env", "", "Bray-Curtis", 1000, false, false, false, false, false);
-	uBC.Dissimilarity("../unit-tests/temp.txt");
+	uBC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.454545))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.8))
@@ -438,9 +438,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Bray-Curtis
 	DiversityCalculator BC("../unit-tests/DataMatrixMothur.env", "", "Bray-Curtis", 1000, true, false, false, false, false);
-	BC.Dissimilarity("../unit-tests/temp.txt");
+	BC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.8))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.6))
@@ -450,9 +450,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Canberra
 	DiversityCalculator Canberra("../unit-tests/DataMatrixMothur.env", "", "Canberra", 1000, true, false, false, false, false);
-	Canberra.Dissimilarity("../unit-tests/temp.txt");
+	Canberra.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 6.35152))
 		return false;
 	if(!Compare(dissMatrix[2][0], 8.11111))
@@ -462,9 +462,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Gower
 	DiversityCalculator Gower("../unit-tests/DataMatrixMothur.env", "", "Gower", 1000, true, false, false, false, false);
-	Gower.Dissimilarity("../unit-tests/temp.txt");
+	Gower.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 6.58333))
 		return false;
 	if(!Compare(dissMatrix[2][0], 7.88889))
@@ -474,9 +474,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Hellinger
 	DiversityCalculator Hellinger("../unit-tests/DataMatrixMothur.env", "", "Hellinger", 1000, true, false, false, false, false);
-	Hellinger.Dissimilarity("../unit-tests/temp.txt");
+	Hellinger.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1.13904))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1.05146))
@@ -486,9 +486,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Manhattan
 	DiversityCalculator Manhattan("../unit-tests/DataMatrixMothur.env", "", "Manhattan", 1000, true, false, false, false, false);
-	Manhattan.Dissimilarity("../unit-tests/temp.txt");
+	Manhattan.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1.6))
 		return false;
 	if(!Compare(dissMatrix[2][0], 1.2))
@@ -498,9 +498,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Morisita-Horn
 	DiversityCalculator MH("../unit-tests/DataMatrixMothur.env", "", "Morisita-Horn", 1000, true, false, false, false, false);
-	MH.Dissimilarity("../unit-tests/temp.txt");
+	MH.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.873239))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.333333))
@@ -510,9 +510,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Soergel
 	DiversityCalculator Soergel("../unit-tests/DataMatrixMothur.env", "", "Soergel", 1000, true, false, false, false, false);
-	Soergel.Dissimilarity("../unit-tests/temp.txt");
+	Soergel.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.88888901))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.75))
@@ -523,9 +523,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 	// weighted species profile
 	/*
 	DiversityCalculator SP("../unit-tests/DataMatrixMothur.env", "", "Species profile", 1000, true, false, false, false, false);
-	SP.Dissimilarity("../unit-tests/temp.txt");
+	SP.Dissimilarity("../unit-tests/temp.diss");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.78740102))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.44721401))
@@ -538,9 +538,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 	// Note: EBD uses a slightly different form of the Chi-squared measure as suggested in Numerical Ecology by Legendre adn Legendre
 	// Nonetheless, it is easy to verify this using mothur. Simply divide by sqrt(N), N is the total number of sequences.
 	DiversityCalculator ChiSquared("../unit-tests/DataMatrixMothur.env", "", "Chi-squared", 1000, true, false, false, false, false);
-	ChiSquared.Dissimilarity("../unit-tests/temp.txt");
+	ChiSquared.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1.0973200))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.96513098))
@@ -550,9 +550,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Euclidean
 	DiversityCalculator Euclidean("../unit-tests/DataMatrixMothur.env", "", "Euclidean", 1000, true, false, false, false, false);
-	Euclidean.Dissimilarity("../unit-tests/temp.txt");
+	Euclidean.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.78740102))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.44721401))
@@ -562,9 +562,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Kulczynski
 	DiversityCalculator Kulczynski("../unit-tests/DataMatrixMothur.env", "", "Kulczynski", 1000, true, false, false, false, false);
-	Kulczynski.Dissimilarity("../unit-tests/temp.txt");
+	Kulczynski.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.8))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.6))
@@ -574,9 +574,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Pearson
 	DiversityCalculator uPearson("../unit-tests/DataMatrixMothur.env", "", "Pearson", 1000, true, false, false, false, false);
-	uPearson.Dissimilarity("../unit-tests/temp.txt");
+	uPearson.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 1.22089))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.5))
@@ -586,9 +586,9 @@ bool UnitTests::WeightedDataMatrixMothur()
 
 	// weighted Yue-Clayton
 	DiversityCalculator YC("../unit-tests/DataMatrixMothur.env", "", "YueClayton", 1000, true, false, false, false, false);
-	YC.Dissimilarity("../unit-tests/temp.txt");
+	YC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.93233103))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.5))
@@ -605,33 +605,33 @@ bool UnitTests::Multifurcating()
 
 	// unweighted Soergel
 	DiversityCalculator Soergel("../unit-tests/Multifurcating.env", "../unit-tests/Multifurcating.tre", "Soergel", 1000, false, false, false, false, false);
-	Soergel.Dissimilarity("../unit-tests/temp.txt");
+	Soergel.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.855070))
 		return false;
 
 	// weighted Bray-Curtis
 	DiversityCalculator BC("../unit-tests/Multifurcating.env", "../unit-tests/Multifurcating.tre", "Bray-Curtis", 1000, true, false, false, false, false);
-	BC.Dissimilarity("../unit-tests/temp.txt");
+	BC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.75457500))
 		return false;
 
 	// weighted normalized UniFrac
 	DiversityCalculator NWU("../unit-tests/Multifurcating.env", "../unit-tests/Multifurcating.tre", "NormalizedWeightedUniFrac", 1000, true, false, false, false, false);
-	NWU.Dissimilarity("../unit-tests/temp.txt");
+	NWU.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.75457500))
 		return false;
 
 	// MRCA restricted weighted normalized UniFrac
 	DiversityCalculator MRCA_NWU("../unit-tests/Multifurcating.env", "../unit-tests/Multifurcating.tre", "NormalizedWeightedUniFrac", 1000, true, false, true, false, false);
-	MRCA_NWU.Dissimilarity("../unit-tests/temp.txt");
+	MRCA_NWU.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.75457500))
 		return false;
 
@@ -644,9 +644,9 @@ bool UnitTests::SharedSeqs()
 
 	// unweighted MRCA (= MRCA restricted Soergel)
 	DiversityCalculator uMRCA("../unit-tests/SharedSeqs.env", "../unit-tests/SharedSeqs.tre", "Soergel", 1000, false, false, true, false, false);
-	uMRCA.Dissimilarity("../unit-tests/temp.txt");
+	uMRCA.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 8.0/13.0))
 		return false;
 	if(!Compare(dissMatrix[2][0], 8.0/13.0))
@@ -656,9 +656,9 @@ bool UnitTests::SharedSeqs()
 
 	// unweighted Tamas coefficient
 	DiversityCalculator uTC("../unit-tests/SharedSeqs.env", "../unit-tests/SharedSeqs.tre", "Tamas coefficient", 1000, false, false, false, false, false);
-	uTC.Dissimilarity("../unit-tests/temp.txt");
+	uTC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 8.0/13.0))
 		return false;
 	if(!Compare(dissMatrix[2][0], 8.0/13.0))
@@ -668,9 +668,9 @@ bool UnitTests::SharedSeqs()
 
 	// unweighted Soergel
 	DiversityCalculator uSoergel("../unit-tests/SharedSeqs.env", "../unit-tests/SharedSeqs.tre", "Soergel", 1000, false, false, false, false, false);
-	uSoergel.Dissimilarity("../unit-tests/temp.txt");
+	uSoergel.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 8.0/13.0))
 		return false;
 	if(!Compare(dissMatrix[2][0], 8.0/13.0))
@@ -680,9 +680,9 @@ bool UnitTests::SharedSeqs()
 
 	// unweighted Canberra
 	DiversityCalculator uCanberra("../unit-tests/SharedSeqs.env", "../unit-tests/SharedSeqs.tre", "Canberra", 1000, false, false, false, false, false);
-	uCanberra.Dissimilarity("../unit-tests/temp.txt");
+	uCanberra.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 8.0))
 		return false;
 	if(!Compare(dissMatrix[2][0], 8.0))
@@ -692,9 +692,9 @@ bool UnitTests::SharedSeqs()
 
 	// weighted Soergel
 	DiversityCalculator Soergel("../unit-tests/SharedSeqs.env", "../unit-tests/SharedSeqs.tre", "Soergel", 1000, true, false, false, false, false);
-	Soergel.Dissimilarity("../unit-tests/temp.txt");
+	Soergel.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.55))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.615385))
@@ -704,9 +704,9 @@ bool UnitTests::SharedSeqs()
 
 	// weighted Bray-Curtis
 	DiversityCalculator BC("../unit-tests/SharedSeqs.env", "../unit-tests/SharedSeqs.tre", "Bray-Curtis", 1000, true, false, false, false, false);
-	BC.Dissimilarity("../unit-tests/temp.txt");
+	BC.Dissimilarity("../unit-tests/temp", "UPGMA");
 
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.37931000))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.444440))
@@ -716,9 +716,9 @@ bool UnitTests::SharedSeqs()
 
 	// weighted Fst
 	DiversityCalculator Fst("../unit-tests/SharedSeqs.env", "../unit-tests/SharedSeqs.tre", "Fst", 1000, true, false, false, false, false);
-	Fst.Dissimilarity("../unit-tests/temp.txt");
+	Fst.Dissimilarity("../unit-tests/temp", "UPGMA");
 	
-	ReadDissMatrix("../unit-tests/temp.txt", dissMatrix);
+	ReadDissMatrix("../unit-tests/temp.diss", dissMatrix);
 	if(!Compare(dissMatrix[1][0], 0.139560))
 		return false;
 	if(!Compare(dissMatrix[2][0], 0.18378390))

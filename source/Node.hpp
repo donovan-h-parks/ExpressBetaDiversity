@@ -116,6 +116,18 @@ public:
 		node->SetParent(this);
 	}
 
+	/** 
+	 * @brief Remove child node.
+	 * @param pos Specifies which child to remove.
+	 */
+	void RemoveChild(unsigned int pos);
+
+	/** 
+	 * @brief Remove child node.
+	 * @param node Node to be removed.
+	 */
+	void RemoveChild(Node* node);
+
 	/** Remove all child nodes. */
 	void RemoveChildren() { m_children.clear(); }
 
@@ -125,18 +137,22 @@ public:
 	/** Check if node is a leaf node. */
 	bool IsLeaf() const  { return m_children.empty(); }
 
-	/** Set number of leaf nodes descendant from this node. */
-	void SetNumberOfLeaves(uint leaves) { m_numLeaves = leaves; }
-
-	/** Get number of leaf nodes descendant from this node. */
-	uint GetNumberOfLeaves() const { return m_numLeaves; }
-
 	/**
 	 * @brief Retrieve all leaves from a subtree.
 	 * @param node Node that defines the subtree.
 	 * @return vector of leaves in the subtree.
 	 */
 	std::vector<Node*> GetLeaves();
+
+	/**
+	 * @brief Retrieve all son nodes from a subtree.
+	 * @param node Node that defines the subtree.
+	 * @return Vector of nodes in the subtree.
+	 */
+	std::vector<Node*> GetNodes();
+
+	void SetJackknife(double value) { m_jackknife = value; }
+	double GetJackknife() const { return m_jackknife; }
 
 private:
 	/**
@@ -145,6 +161,13 @@ private:
 	 * @param leaves A vector of leaves in the subtree.
 	 */
 	void GetLeaves(Node* node, std::vector<Node*>& leaves);
+
+	/**
+	 * @brief Retrieve all son nodes from a subtree.
+	 * @param node Node that defines the subtree.
+	 * @param nodes Vector of pointers toward each son node in the subtree.
+	 */
+	void GetNodes(Node* node, std::vector<Node*>& nodes);
 
 private:
 	/** Name of node. */
@@ -159,9 +182,6 @@ private:
 	/** Distance to parent of this node. */
   double m_distanceToParent; 
 
-	/** Leaf nodes descendant from this node. */
-	uint m_numLeaves; 
-
 	/** Sequence data index. */
 	uint m_seqIndex;
 
@@ -173,6 +193,9 @@ private:
 
 	/** Generic value. */
 	double m_value;
+
+	/** Jackknife value of node. */
+	double m_jackknife;
 };
 
 #endif

@@ -52,12 +52,6 @@ public:
 	 */		
 	void SetName(const std::string& name) { m_name = name; }
 
-	/** Get number of nodes in tree. */
-	uint GetNumNodes() const { return m_numNodes; }
-
-	/** Set number of nodes in tree. */
-	void SetNumNodes(uint numNodes) { m_numNodes = numNodes; }
-
 	/** 
 	 * @brief Set root node of tree.
 	 * @param root Desired root node.
@@ -81,11 +75,20 @@ public:
 	/** Get nodes in breadth-first traversal order within the specified subtree. */
 	std::vector<N*> BreadthFirstOrder(N* subtree) const;
 
+	/** Get all nodes in tree. */
+	std::vector<N*> GetNodes(N* node);
+
 	/** Get phylogenetic distance between two nodes. */
 	double GetPhylogeneticDistance(N* node1, N* node2);
 
 	/** Get phylogenetic distance to root. */
 	double GetDistanceToRoot(N* node);
+
+	/**
+	 * @brief Project tree onto the specified set of leaf nodes.
+	 * @param leavesToRetain List of leave nodes to retain in tree.
+	 */
+	void Project(const std::vector<std::string>& leavesToRetain);
 
 private:
 	void DestroySubtree(N* node);
@@ -104,11 +107,16 @@ private:
 	 */
 	void PostOrder(N* node, std::vector<N*>& nodes) const;
 
+	/**
+	 * @brief Retrieve all son nodes from a subtree.
+	 * @param node Node that defines the subtree.
+	 * @param nodes Vector of pointers toward each son node in the subtree.
+	 */
+	static void GetNodes(N* node, std::vector<N*>& nodes);
+
 private:
 	N* m_root;
 	std::string m_name;		
-
-	uint m_numNodes;
 };
 
 // --- Function implementations -----------------------------------------------
@@ -262,6 +270,111 @@ double Tree<N>::GetDistanceToRoot(N* node)
 	}
 
 	return dist;
+}
+
+template <class N>
+void Tree<N>::Project(const std::vector<std::string>& leavesToRetain)
+{
+	// mark all internal node as active so we can distinguish them from true leaf nodes
+	std::vector<N*> nodes = GetNodes(m_root);
+	for(uint i = 0; i < nodes.size(); ++i)
+		nodes[i]->SetCounter(!nodes[i]->IsLeaf());
+
+	// 1. Removes leave nodes from the tree.
+	std::set<std::string> leavesToRetainSet;
+	for(uint i = 0; i < leavesToRetain.size(); ++i)
+		leavesToRetainSet.insert(leavesToRetain[i]);
+
+	std::vector<N*> leaves = GetLeaves(m_root);
+	for(uint i = 0; i < leaves.size(); ++i)
+	{
+		if(!leavesToRetainSet.count(leaves[i]->GetName()))
+		{
+			leaves[i]->GetParent()->RemoveChild(leaves[i]);
+			delete leaves[i];
+		}
+	}
+
+	// 2. Collapse any internal nodes that have less than 2 children. This
+	// is done in a breadth first manner from the leaf nodes to the root node.
+	std::vector<N*> curNodes = GetLeaves(m_root);
+	std::set<N*> nextNodes;
+	while(!curNodes.empty())
+	{
+		nextNodes.clear();
+		for(uint i = 0; i < curNodes.size(); ++i)
+		{
+			N* node = curNodes[i];
+
+			if(!node->IsRoot())
+				nextNodes.insert(node->GetParent());
+
+			if(node->GetCounter() && node->GetNumberOfChildren() == 0)
+			{
+				if(node->IsRoot())
+				{
+					// we have a root with no children so just leave it as the sole node in the tree
+				}
+				else
+				{
+					// remove this node from the tree
+					node->GetParent()->RemoveChild(node);
+					nextNodes.erase(node);
+					delete node;
+				}
+			}
+			else if(node->GetCounter() && node->GetNumberOfChildren() == 1)
+			{		
+				if(node->IsRoot())
+				{
+					// the root is degenerate so we must make its sole child the new root
+					SetRootNode(node->GetChild(0));
+					node->GetChild(0)->SetParent(NULL);
+					node->GetChild(0)->SetDistanceToParent(Node::NO_DISTANCE);
+					nextNodes.erase(node);
+					delete node;
+				}
+				else
+				{
+					// remove node from tree after assigning its sole child to its parent
+					node->GetParent()->AddChild(node->GetChild(0));	
+					
+					if(node->GetChild(0)->GetDistanceToParent() != Node::NO_DISTANCE)
+					{
+						// keep track of branch lengths
+						node->GetChild(0)->SetDistanceToParent(node->GetChild(0)->GetDistanceToParent() 
+																											+ node->GetDistanceToParent()); 
+					}
+
+					node->GetParent()->RemoveChild(node);
+					nextNodes.erase(node);
+					delete node;
+				}
+			}	
+		}
+
+		curNodes.clear();
+		std::copy(nextNodes.begin(), nextNodes.end(), std::back_inserter(curNodes));
+	}
+}
+
+template <class N>
+std::vector<N*> Tree<N>::GetNodes(N* node)
+{
+	std::vector<N*> nodes;
+	GetNodes(node, nodes);
+	return nodes;
+}
+
+template <class N>
+void Tree<N>::GetNodes(N* node, std::vector<N*>& nodes)
+{
+	for(unsigned int i = 0; i < node->GetNumberOfChildren(); i++)
+	{
+		GetNodes(node->GetChild(i), nodes);
+	}
+
+	nodes.push_back(node);
 }
 
 #endif	

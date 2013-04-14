@@ -26,15 +26,20 @@
 
 #include "DiversityCalculator.hpp"
 
+#include "SeqCountIO.hpp"
+
 #include "UnitTests.hpp"
 
-bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string& seqCountFile, std::string& dissFile, 
+bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string& seqCountFile, std::string& outputPrefix, 
+											std::string& clusteringMethod, uint& jackknifeRep, uint& seqToDraw, bool& bSampleSize,
 											std::string& calcStr, uint& maxDataVecs, bool& bWeighted, bool& bMRCA, bool& bStrictMRCA, bool& bCount, 
 											bool& bAll, double& threshold, std::string& outputFile, bool& bVerbose)
 {
 	bool bShowHelp, bShowCalc, bUnitTests;
 	std::string maxDataVecsStr;
 	std::string thresholdStr;
+	std::string jackknifeRepStr;
+	std::string seqToDrawStr;
 	GetOpt::GetOpt_pp opts(argc, argv);
 	opts >> GetOpt::OptionPresent('h', "help", bShowHelp);
 	opts >> GetOpt::OptionPresent('l', "list-calc", bShowCalc);
@@ -42,7 +47,11 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	opts >> GetOpt::OptionPresent('u', "unit-tests", bUnitTests);
 	opts >> GetOpt::Option('t', "tree-file", treeFile);
 	opts >> GetOpt::Option('s', "seq-count-file", seqCountFile);
-	opts >> GetOpt::Option('d', "diss-file", dissFile);
+	opts >> GetOpt::Option('p', "output-prefix", outputPrefix);
+	opts >> GetOpt::Option('g', "clustering", clusteringMethod, "UPGMA");
+	opts >> GetOpt::Option('j', "jackknife", jackknifeRepStr, "0");
+	opts >> GetOpt::Option('d', "seqs-to-draw", seqToDrawStr, "0");
+	opts >> GetOpt::OptionPresent('z', "sample-size", bSampleSize);
 	opts >> GetOpt::Option('c', "calculator", calcStr);
 	opts >> GetOpt::Option('x', "max-data-vecs", maxDataVecsStr, "1000");
 	opts >> GetOpt::OptionPresent('w', "weighted", bWeighted);
@@ -51,15 +60,17 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	opts >> GetOpt::OptionPresent('y', "count", bCount);
 	opts >> GetOpt::OptionPresent('a', "all", bAll);
 	opts >> GetOpt::Option('b', "threshold", thresholdStr, "0.8");
-	opts >> GetOpt::Option('o', "output-file ", outputFile, "clusters.txt");
+	opts >> GetOpt::Option('o', "output-file", outputFile, "clusters.txt");
 
 	maxDataVecs = atoi(maxDataVecsStr.c_str());
 	threshold = atof(thresholdStr.c_str());
+	jackknifeRep = atoi(jackknifeRepStr.c_str());
+	seqToDraw = atoi(seqToDrawStr.c_str());
 
 	if(bShowHelp || argc <= 1) 
 	{		
 		std::cout << std::endl;
-		std::cout << "Express Beta Diversity (EBD) v1.0.2 (Feb. 5, 2013)" << std::endl;
+		std::cout << "Express Beta Diversity (EBD) v1.0.3 (April 15, 2013)" << std::endl;
 		std::cout << "  by Donovan Parks (donovan.parks@gmail.com) and Rob Beiko (beiko@cs.dal.ca)" << std::endl;
 		std::cout << std::endl;
 		std::cout << " Usage: " << opts.app_name() << " -t <tree file> -s <seq file> -c <calculator> -d <dissimilarity file>" << std::endl;
@@ -69,7 +80,13 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		std::cout << std::endl;
 		std::cout << "  -t, --tree-file      Tree in Newick format (if phylogenetic beta-diversity is desired)." << std::endl;
 		std::cout << "  -s, --seq-count-file Sequence count file." << std::endl;
-		std::cout << "  -d, --diss-file      File to write dissimilarity matrix to." << std::endl;
+		std::cout << "  -p, --output-prefix  Output prefix." << std::endl;
+		std::cout << std::endl;
+		std::cout << "  -g, --clustering     Hierarchical clustering method: UPGMA, SingleLinkage, CompleteLinkage, NJ (default = UPGMA)." << std::endl;
+		std::cout << std::endl;
+		std::cout << "  -j, --jackknife      Number of jackknife replicates to perform (default = 0)." << std::endl;
+		std::cout << "  -d, --seqs-to-draw   Number of sequence to draw for jackknife replicates." << std::endl;
+		std::cout << "  -z, --sample-size    Print number of sequences in each sample." << std::endl;
 		std::cout << std::endl;
 		std::cout << "  -c, --calculator     Desired calculator (e.g., Bray-Curtis, Canberra)." << std::endl;
 		std::cout << "  -w, --weighted       Indicates if sequence abundance data should be used." << std::endl;
@@ -81,7 +98,7 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		std::cout << std::endl;
 		std::cout << "  -a, --all            Apply all calculators and cluster calculators at the specified threshold." << std::endl;
 		std::cout << "  -b, --threshold      Correlation threshold for clustering calculators (default = 0.8)." << std::endl;
-		std::cout << "  -o, --output-file    File to write clusters to (default = clusters.txt)." << std::endl;
+		std::cout << "  -o, --output-file    Output file for cluster of calculators (default = clusters.txt)." << std::endl;
 		std::cout << std::endl;
 		std::cout << "  -v, --verbose        Provide additional information on program execution." << std::endl;
 							
@@ -116,6 +133,13 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		std::cout << "  Yue-Clayton (aka: similarity ratio)" << std::endl;
 		std::cout << std::endl;
 
+		return false;
+	}
+
+	if(jackknifeRep != 0 && seqToDraw == 0)
+	{
+		std::cout << std::endl;
+		std::cout << "  [Error] The --seqs-to-draw (-d) flag must be set along with the --jackknife (-j) flag." << std::endl;
 		return false;
 	}
 
@@ -181,11 +205,17 @@ int main(int argc, char* argv[])
 {
 	std::clock_t timeStart = std::clock();
 
+	srand((uint)time(NULL));
+
 	// parse command line arguments
 	std::string treeFile;
 	std::string seqCountFile;
-	std::string dissFile;
+	std::string outputPrefix;
+	std::string clusteringMethod;
 	std::string calcStr;
+	uint jackknifeRep;
+	uint seqToDraw;
+	bool bSampleSize;
 	uint maxDataVecs;
 	bool bWeighted;
 	bool bMRCA;
@@ -195,8 +225,13 @@ int main(int argc, char* argv[])
 	bool bAll;
 	double threshold;
 	std::string outputFile;
-	if(!ParseCommandLine(argc, argv, treeFile, seqCountFile, dissFile, calcStr, maxDataVecs, bWeighted, bMRCA, bStrictMRCA, bCount, bAll, threshold, outputFile, bVerbose))
+	if(!ParseCommandLine(argc, argv, treeFile, seqCountFile, outputPrefix, clusteringMethod, 
+												jackknifeRep, seqToDraw, bSampleSize, 
+												calcStr, maxDataVecs, bWeighted, bMRCA, bStrictMRCA, 
+												bCount, bAll, threshold, outputFile, bVerbose))
+	{
 		return 0;
+	}
 
 	if(bAll)
 	{
@@ -205,7 +240,37 @@ int main(int argc, char* argv[])
 		if(!calculator.IsGood())
 			return -1;
 
-		calculator.All(threshold, outputFile);
+		calculator.All(threshold, outputFile, clusteringMethod);
+		return 0;
+	}
+
+	if(bSampleSize)
+	{
+		SeqCountIO sampleCountIO;
+		sampleCountIO.Read(seqCountFile);
+
+		std::string sampleWithMinSeqs;
+		double minSeqs = std::numeric_limits<double>::max();
+		
+		std::cout << "Sample Id" << '\t' << "Number of Sequences" << std::endl;
+		for(uint i = 0; i < sampleCountIO.GetNumSamples(); ++i)
+		{
+			std::vector<double> count;
+			double totalNumSeqs;
+			sampleCountIO.GetData(i, count, totalNumSeqs);
+
+			std::cout << sampleCountIO.GetSampleName(i) << '\t' << totalNumSeqs << std::endl;
+
+			if(totalNumSeqs < minSeqs)
+			{
+				minSeqs = totalNumSeqs;
+				sampleWithMinSeqs = sampleCountIO.GetSampleName(i);
+			}
+		}
+
+		std::cout << std::endl;
+		std::cout << "Sample with minimum number of sequences is " << sampleWithMinSeqs << " with " << minSeqs << " sequences." << std::endl;
+
 		return 0;
 	}
 
@@ -218,7 +283,7 @@ int main(int argc, char* argv[])
 		return -1;
 
 	// compute dissimilarity between all pairs of samples
-	if(!calculator.Dissimilarity(dissFile))
+	if(!calculator.Dissimilarity(outputPrefix, clusteringMethod, jackknifeRep, seqToDraw))
 		return -1;
 	
 	std::clock_t timeEnd = std::clock();

@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with EBD.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
 Installation:
 -------------------------------------------------------------------------------
 
@@ -32,16 +31,6 @@ directory of EBD. The resulting executable will be in the bin directory.
 A precompiled executables for Windows is provided in the bin directory. 
 Please note that even under Windows, EBD must be run from the command-line 
 (i.e., the DOS prompt).
-
-The ClusterTree program can be used to generating hierarchical cluster trees
-from the dissimilarity matrices produced by EBD. The source code is contained
-in the cluster_tree directory. Again, just run 'make' to build on OSX or Linux.
-An exectuable is provided for Windows. 
-
-ProjectTree can be used to project a tree onto a specific set of taxa. EBD
-assumes a tree contain only taxa present in at least one sample. The source 
-code is contained in the project_tree directory. Again, just run 'make' to 
-build on OSX or Linux. An exectuable is provided for Windows. 
 
 
 Program usage:
@@ -57,7 +46,13 @@ Options:
 
  -t, --tree-file      Tree in Newick format (if phylogenetic beta-diversity is desired).
  -s, --seq-count-file Sequence count file.
- -d, --diss-file      File to write dissimilarity matrix to.
+ -p, --output-prefix  Output prefix.
+ 
+ -g, --clustering     Hierarchical clustering method: UPGMA, SingleLinkage, CompleteLinkage, NJ (default = UPGMA).
+ 
+ -j, --jackknife      Number of jackknife replicates to perform (default = 0).
+ -d, --seqs-to-draw   Number of sequence to draw for jackknife replicates.
+ -z, --sample-size    Print number of sequences in each sample.
 
  -c, --calculator     Desired calculator (e.g., Bray-Curtis, Canberra).
  -w, --weighted       Indicated if sequence abundance data should be used.
@@ -69,16 +64,29 @@ Options:
  
  -a, --all            Apply all calculators and cluster calculators at the specified threshold.
  -b, --threshold      Correlation threshold for clustering calculators (default = 0.8).
- -o, --output-file    File to write clusters to (default = clusters.txt.
+ -o, --output-file    Output file for cluster of calculators (default = clusters.txt).
 
  -v, --verbose        Provide additional information on program execution.
 
-Examples of Use:
- ./ExpressBetaDiversity -t input.tre -s seq.txt -d output.txt -c Bray-Curtis -w
- ./ExpressBetaDiversity -t input.tre -s seq.txt -a -b 0.9 -o clusters.txt
-
-
+Example of applying a specific calculator:
+ ./ExpressBetaDiversity -t input.tre -s seq.txt -p bray_curtis -c Bray-Curtis -w
+which will result in two output files, the raw dissimilarity matrix in bray_curtis.diss 
+and a UPGMA hierarchical cluster tree in bray_curtis.tre.
  
+Example of querying number of sequences in each sample:
+ ./ExpressBetaDiversity -s seq.txt -z
+which will result in the number of sequences in each sample being written to standard out.
+ 
+Example of applying a specific calculator with jackknife replicates:
+ ./ExpressBetaDiversity -t input.tre -s seq.txt -p bray_curtis -c Bray-Curtis -w -j 100 -d 500
+which will result in two output files, the raw dissimilarity matrix in bray_curtis.diss 
+and a UPGMA hierarchical cluster tree in bray_curtis.tre with jackknife support values.
+ 
+Example of applying all calculators and clustering these based on their Pearson correlation:
+ ./ExpressBetaDiversity -t input.tre -s seq.txt -a -b 0.9 -o clusters.txt
+which will result in the output file clusters.txt (see file format below).
+
+
 Verifying software installation:
 -------------------------------------------------------------------------------
 
@@ -105,7 +113,6 @@ in the sequence count file. ProjectTree prunes the tree to remove any
 taxa not present in the sequence count file.
 
 
- 
 Input file formats:
 -------------------------------------------------------------------------------
 
@@ -121,7 +128,7 @@ each row is a sample and each column is the name of a leaf node in the provided
 tree. Data must be provided for all leaf nodes in the tree. Consider the 
 following example:
 
-  A	B	C
+	A	B	C
 Sample1	1	2	3
 Sample2	10	1	0
 Sample3	0	0	1
@@ -137,16 +144,17 @@ other sequence/OTU types.
 Example input files are avaliable in the unit-tests directory. 
 
 
-
-Converting from UniFrac file format:
+Converting from QIIME/UniFrac/biom file formats:
 -------------------------------------------------------------------------------
 
-The script convertUniFracToEBD.py in the scripts directory can be used to 
-convert sample data formatted for the UniFrac or Fast UniFrac web services 
-into the format expected by EBD. The script can be run as follows:
+The script convertToEBD.py in the scripts directory can be used to 
+convert sparse or dense biom-format OTU tables into the format
+required by EBD. The biom-format is used by many popular services
+including the UniFrac web services and QIIME. EBD uses a different
+input file format in order to efficently handle data sets consisting
+of thousands of samples. The script can be run as follows:
 
-  ./convertUniFracToEBD.py <input UniFrac file> <ouput EBD file>
-
+  ./convertUniFracToEBD.py <input biom file> <ouput EBD file>
 
 
 Dissimilarity output file format:
@@ -163,20 +171,6 @@ C	2	3
 
 The first line indicates that there are 3 samples. The dissimilarity between 
 samples A and B is 1, A and C is 2, and B and C is 3.
-
-
-
-Building hierarchical cluster trees:
--------------------------------------------------------------------------------
-
-A seperate program is provided for generating hierarchical cluster trees from
-the dissimilarity matrices generated by EBD. The executable for this program
-is provided in the bin directory. It can be invoked as follows:
-
-  ./ClusterTree <method> <input matrix> <output tree>
-
-Method can be either NJ, UPGMA, SingleLinkage, or CompleteLinkage.
-
 
 Clustering output file format:
 -------------------------------------------------------------------------------
@@ -213,15 +207,15 @@ Citing EBD:
 
 If you use EBD in your research, please cite:
 
-Parks, D.H. and Beiko, R.G. Measures of phylogenetic differentiation provide 
-  robust and complementary insights into microbial communities. ISME J.
+Parks, D.H. and Beiko, R.G. 2013. Measures of phylogenetic differentiation provide 
+  robust and complementary insights into microbial communities. ISME J, 7:173-83.
 
 
 Contact Information:
 -------------------------------------------------------------------------------
 
 Donovan Parks
-parks@cs.dal.ca
+donovan.parks@gmail.com
 
 Robert Beiko
 beiko@cs.dal.ca

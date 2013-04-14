@@ -1,67 +1,77 @@
 //=======================================================================
 // Author: Donovan Parks
 //
-// Copyright 2009 Donovan Parks
+// Copyright 2011 Donovan Parks
 //
-// This file is part of Chameleon.
+// This file is part of ExpressBetaDiversity.
 //
-// Chameleon is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// ExpressBetaDiversity is free software: you can redistribute it 
+// and/or modify it under the terms of the GNU General Public License 
+// as published by the Free Software Foundation, either version 3 of 
+// the License, or (at your option) any later version.
 //
-// Chameleon is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// ExpressBetaDiversity is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Chameleon. If not, see <http://www.gnu.org/licenses/>.
+// along with ExpressBetaDiversity. If not, see 
+// <http://www.gnu.org/licenses/>.
 //=======================================================================
 
 #include "Precompiled.hpp"
 
+#include "DataTypes.hpp"
+
 #include "Cluster.hpp"
+#include "NeighbourJoining.hpp"
 
 #include <float.h>
 
 
 void Cluster::Clustering(CLUSTER_TYPE clusterType, const Matrix& _distMatrix, const std::vector<std::string>& labels, Tree<Node>* tree)
 {
-	// keep original distance matrix unmodified
-	Matrix distMatrix = _distMatrix;
-
-	// create initial singleton clusters
-	std::vector<Node*> clusters;
-	for(uint i = 0; i < labels.size(); ++i)
+	if(clusterType == NEIGHBOUR_JOINING)
 	{
-		Node* node = new Node(labels.at(i));
-		clusters.push_back(node);
-		node->SetNumberOfLeaves(1);
+		NJ(_distMatrix, labels, tree);
 	}
-
-	// perform hierarchical clustering
-	while(distMatrix.size() > 1)
+	else
 	{
-		// find nearest clusters
-		uint row = 0, col = 0;
-		FindNearestClusters(distMatrix, row, col);
-		
-		// update distance matrix 
-		double dist = distMatrix.at(row).at(col);
-		UpdateDistanceMatrix(clusterType, distMatrix, clusters, row, col);
+		// keep original distance matrix unmodified
+		Matrix distMatrix = _distMatrix;
 
-		// update clusters in the cluster tree
-		UpdateClusters(clusters, row, col, dist);
+		// create initial singleton clusters
+		std::vector<Node*> clusters;
+		for(uint i = 0; i < labels.size(); ++i)
+		{
+			Node* node = new Node(labels.at(i));
+			clusters.push_back(node);
+		}
+
+		// perform hierarchical clustering
+		while(distMatrix.size() > 1)
+		{
+			// find nearest clusters
+			uint row = 0, col = 0;
+			FindNearestClusters(distMatrix, row, col);
+			
+			// update distance matrix 
+			double dist = distMatrix.at(row).at(col);
+			UpdateDistanceMatrix(clusterType, distMatrix, clusters, row, col);
+
+			// update clusters in the cluster tree
+			UpdateClusters(clusters, row, col, dist);
+		}
+
+		if(clusters.size() != 1)
+		{
+			std::cout << "Error in clustering algorithm. Cluster size != 1.";
+			return;
+		}
+
+		tree->SetRootNode(clusters.at(0));
 	}
-
-	if(clusters.size() != 1)
-	{
-		std::cout << "Error in clustering algorithm. Cluster size != 1.";
-		return;
-	}
-
-	tree->SetRootNode(clusters.at(0));
 
 		// set name of tree to reflect clustering method
 	if(clusterType == Cluster::COMPLETE_LINKAGE)
@@ -70,6 +80,8 @@ void Cluster::Clustering(CLUSTER_TYPE clusterType, const Matrix& _distMatrix, co
 		tree->SetName("Single linkage");
 	else if(clusterType == Cluster::AVERAGE_LINKAGE)
 		tree->SetName("Average linkage (UPGMA)");
+	else if(clusterType == Cluster::NEIGHBOUR_JOINING) 
+		tree->SetName("Neighbour joining");
 }
 
 void Cluster::FindNearestClusters(Matrix& distMatrix, uint& row, uint& col)
@@ -109,12 +121,11 @@ double Cluster::GetDistanceToNode(Node* node)
 void Cluster::UpdateClusters(std::vector<Node*>& clusters, uint row, uint col, double value)
 {
 	// create new node
-	Node* node = new Node();
+	Node* node = new Node;
 
 	// set children of this node
 	node->AddChild(clusters.at(row));
 	node->AddChild(clusters.at(col));
-	node->SetNumberOfLeaves(clusters.at(row)->GetNumberOfLeaves() + clusters.at(col)->GetNumberOfLeaves());
 
 	// set distance from children to parent
 	clusters.at(row)->SetDistanceToParent(value - GetDistanceToNode(clusters.at(row)));
@@ -148,8 +159,8 @@ void Cluster::UpdateDistanceMatrix(CLUSTER_TYPE clusterType, Matrix& distMatrix,
 		}
 		else if(clusterType == AVERAGE_LINKAGE)
 		{
-			uint sizeClusterI = clusters.at(row)->GetNumberOfLeaves();
-			uint sizeClusterJ = clusters.at(col)->GetNumberOfLeaves();
+			uint sizeClusterI = clusters.at(row)->GetLeaves().size();
+			uint sizeClusterJ = clusters.at(col)->GetLeaves().size();
 			dist[i] = (sizeClusterI*dist[i] + sizeClusterJ*distMatrix.at(col).at(i)) / (sizeClusterI + sizeClusterJ);
 		}
 	}
@@ -172,4 +183,13 @@ void Cluster::UpdateDistanceMatrix(CLUSTER_TYPE clusterType, Matrix& distMatrix,
 	{
 		distMatrix[i].erase(distMatrix[i].begin() + col);
 	}
+}
+
+void Cluster::NJ(const Matrix& _distMatrix, const std::vector<std::string>& labels, Tree<Node>* tree)
+{
+	// keep original distance matrix unmodified
+	Matrix distMatrix = _distMatrix;
+
+	NeighbourJoining nj;
+	nj.BuildTree(distMatrix, labels, tree);
 }

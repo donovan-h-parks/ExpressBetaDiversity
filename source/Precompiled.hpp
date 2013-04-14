@@ -42,6 +42,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include <string>
 #include <algorithm>
 #include <stack>
@@ -51,6 +52,8 @@
 #include <cmath>
 #include <queue>
 #include <numeric>
+#include <iterator>
+#include <ctype.h>
 
 #ifdef WIN32
 	#include <functional>

@@ -61,7 +61,7 @@ public:
 	const std::vector<std::string>& GetSeqs() const { return m_seqs; }
 
 	/** Get count data for specified sample. */
-	void GetData(uint index, std::vector<double>& count, double& totalNumSeq);
+	void GetData(uint index, std::vector<double>& count, double& totalNumSeq, uint seqsToDraw = 0);
 
 private:
 	/** File stream. */

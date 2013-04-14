@@ -169,8 +169,6 @@ bool NewickIO::ParseNewickString(Tree<Node>& tree, const std::string& newickStr)
 		}
 	}
 
-	tree.SetNumNodes(numNodes);
-
 	return true;
 }
 
@@ -183,7 +181,7 @@ void NewickIO::Write(Tree<Node>& tree, std::ostream& out) const
 
 	Node* root = tree.GetRootNode();
 	
-  if(root->GetNumberOfLeaves() == 0)
+  if(root->GetLeaves().size() == 0)
   {
     out << "'" << root->GetName().c_str() << "'";
 
@@ -225,6 +223,9 @@ void NewickIO::WriteElements(Tree<Node>& tree, std::ostream& out, Node* parent, 
 
 	if(!child->GetName().empty())
 		out << "'" << child->GetName().c_str() << "'";
+
+	if(child->GetJackknife() != Node::NO_DISTANCE)
+		out << child->GetJackknife();
 	
 	if(child->GetDistanceToParent() != Node::NO_DISTANCE)
 		out << ":" << child->GetDistanceToParent();

@@ -120,13 +120,16 @@ bool DiversityCalculator::ReadTreeFile(const std::string& treeFile)
 		if(!newickIO.Read(*m_tree, treeFile))
 			return false;
 
+		// project tree onto sequences in OTU table
+		m_tree->Project(m_seqCountIO.GetSeqs());
+
 		std::clock_t readTreeEnd = std::clock();
 
 		if(m_bVerbose)
 		{
 			std::cout << "  Calculating a phylogenetic beta-diversity measure." << std::endl;
-			std::cout << "  Nodes in input tree: " << m_tree->GetNumNodes() << std::endl;
-			std::cout << "  Leaves in input tree: " << m_tree->GetLeaves(m_tree->GetRootNode()).size() << std::endl;
+			std::cout << "  Nodes in input tree: " << m_tree->GetRootNode()->GetNodes().size() << std::endl;
+			std::cout << "  Leaves in input tree: " << m_tree->GetRootNode()->GetLeaves().size() << std::endl;
 			std::cout << "  Time to read tree: " << ( readTreeEnd - readTreeStart ) / (double)CLOCKS_PER_SEC << " s" << std::endl;
 			std::cout << std::endl;
 		}
@@ -361,7 +364,7 @@ bool DiversityCalculator::SetCalculator(const std::string& calcStr)
 	return true;
 }
 
-void DiversityCalculator::CalculateDataVectors(uint startIndex, uint numSamples, std::vector< std::vector<double> >& dataVec)
+void DiversityCalculator::CalculateDataVectors(uint startIndex, uint numSamples, std::vector< std::vector<double> >& dataVec, uint seqsToDraw)
 {
 	std::clock_t startDataVecs = std::clock();
 	
@@ -372,7 +375,7 @@ void DiversityCalculator::CalculateDataVectors(uint startIndex, uint numSamples,
 	{		
 		std::vector<double> count;
 		double totalNumSeq;
-		m_seqCountIO.GetData(i, count, totalNumSeq);
+		m_seqCountIO.GetData(i, count, totalNumSeq, seqsToDraw);
 
 		std::vector<double> prop;
 		m_dataVec.CalculateDataVector(count, false, totalNumSeq, prop);
@@ -557,10 +560,56 @@ bool DiversityCalculator::InitDataVectorizer()
 	return true;
 }
 
-bool DiversityCalculator::Dissimilarity(const std::string& dissFile)
+bool DiversityCalculator::Dissimilarity(const std::string& outputPrefix, const std::string& clusteringMethod, uint jackknifeRep, uint seqsToDraw)
 {
-	std::clock_t dissStart = std::clock();	
+	std::clock_t dissStart = std::clock();
 
+	std::string dissFile = outputPrefix + ".diss";
+
+	std::vector<Tree<Node>*> jackknifeTrees;
+	if(jackknifeRep != 0)
+	{
+		for(uint i = 0; i < jackknifeRep; ++i)
+		{
+			Tree<Node>* jacknifeTree = new Tree<Node>;
+			if(!CreateDissimilarityMatrix(dissFile, jacknifeTree, clusteringMethod, seqsToDraw))
+				return false;
+
+			jackknifeTrees.push_back(jacknifeTree);
+		}
+	}
+
+	// create tree from full data set
+	Tree<Node>* originalTree = new Tree<Node>;
+	if(!CreateDissimilarityMatrix(dissFile, originalTree, clusteringMethod, 0))
+		return false;
+
+	// create jackknifed tree
+	JackknifeTree(originalTree, jackknifeTrees);
+
+	NewickIO newickIO;
+	newickIO.Write(*originalTree, outputPrefix + ".tre");
+
+	std::clock_t dissEnd = std::clock();
+
+	if(m_bVerbose)
+	{
+		std::cout << std::endl;
+		std::cout << "  Total time to calculate dissimilarity matrix and jackknife trees: " << (dissEnd - dissStart) / (double)CLOCKS_PER_SEC << " s" << std::endl; 
+		std::cout << std::endl;
+	}
+
+	// delete trees
+	delete originalTree;
+
+	for(uint i = 0; i < jackknifeTrees.size(); ++i)
+		delete jackknifeTrees.at(i);
+
+	return true;
+}
+
+bool DiversityCalculator::CreateDissimilarityMatrix(const std::string& dissFile, Tree<Node>* tree, const std::string& clusteringMethod, uint seqsToDraw)
+{
 	// open dissimilarity file
 	std::ofstream dissOut(dissFile.c_str());
 	if(!dissOut.is_open())
@@ -583,11 +632,11 @@ bool DiversityCalculator::Dissimilarity(const std::string& dissFile)
 	double innerLoopTime = 0;
 	for(uint row = 0; row < numBlocks; ++row)
 	{
-		CalculateDataVectors(row*blockLen, blockLen, m_dataVecRows);
+		CalculateDataVectors(row*blockLen, blockLen, m_dataVecRows, seqsToDraw);
 
 		for(uint col = 0; col <= row; ++col)
 		{
-			CalculateDataVectors(col*blockLen, blockLen, m_dataVecCols);
+			CalculateDataVectors(col*blockLen, blockLen, m_dataVecCols, seqsToDraw);
 
 			std::clock_t innerDissLoopStart = std::clock();	
 			for(uint r = 0; r < m_dataVecRows.size(); ++r)
@@ -645,14 +694,146 @@ bool DiversityCalculator::Dissimilarity(const std::string& dissFile)
 
 	delete[] partialDissMatrix;
 
-	std::clock_t dissEnd = std::clock();
-
-	if(m_bVerbose)
+	// read complete dissimilarity matrix and create hierarchical cluster tree
+	Matrix dissMatrix;
+	std::vector<std::string> labels;
+	if(!ReadMatrix(dissFile, dissMatrix, labels))
+		return false;
+	
+	if(clusteringMethod == "NJ")
+		Cluster::Clustering(Cluster::NEIGHBOUR_JOINING, dissMatrix, labels, tree);
+	else if(clusteringMethod == "UPGMA")
+		Cluster::Clustering(Cluster::AVERAGE_LINKAGE, dissMatrix, labels, tree);
+	else if(clusteringMethod == "SingleLinkage")
+		Cluster::Clustering(Cluster::SINGLE_LINKAGE, dissMatrix, labels, tree);
+	else if(clusteringMethod == "CompleteLinkage")
+		Cluster::Clustering(Cluster::COMPLETE_LINKAGE, dissMatrix, labels, tree);
+	else
 	{
-		std::cout << std::endl;
-		std::cout << "  Total time to calculate inner loop of dissimilarity matrix: " << innerLoopTime / (double)CLOCKS_PER_SEC << " s" << std::endl; 
-		std::cout << "  Total time to calculate dissimilarity matrix: " << (dissEnd - dissStart) / (double)CLOCKS_PER_SEC << " s" << std::endl; 
-		std::cout << std::endl;
+		std::cout << "[Error] Unknown clustering method specified: " << clusteringMethod << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+bool DiversityCalculator::ReadMatrix(const std::string& file, Matrix& dissMatrix, std::vector<std::string>& labels)
+{
+	// read dissimilarity matrix
+	std::ifstream fin(file.c_str());
+	if(!fin.is_open())
+	{
+		std::cout << "[Error] Failed to read dissimilarity matrix: " << file << std::endl;
+		return false;
+	}
+
+	uint numSamples;
+	fin >> numSamples;
+
+	dissMatrix.resize(numSamples);
+	for(uint i = 0; i < numSamples; ++i)
+	{
+		dissMatrix[i].resize(numSamples, 0);
+
+		std::string label;
+		fin >> label;
+		labels.push_back(label);
+
+		for(uint j = 0; j < i; ++j)
+		{
+			double v;
+			fin >> v;
+			dissMatrix[i][j] = dissMatrix[j][i] = v;
+		}
+	}
+
+	fin.close();
+
+	return true;
+}
+
+bool DiversityCalculator::JackknifeTree(Tree<Node>* inputTree, const std::vector<Tree<Node>*>& jackknifeTrees)
+{
+	// initialize bootstrap counts and distance to parent
+	std::vector<Node*> inputNodes = inputTree->GetRootNode()->GetNodes();
+	for(uint i = 0; i < inputNodes.size(); ++i)
+		inputNodes[i]->SetJackknife(0);
+
+	// find all matching splits in the input tree to each of the jackknife trees
+	int count = 0;
+	for(unsigned int i = 0; i < jackknifeTrees.size(); ++i)
+	{
+		Tree<Node>* jackknifeTree = jackknifeTrees.at(i);
+
+		std::vector<Node*> jackknifeNodes = jackknifeTree->GetRootNode()->GetNodes();
+		for(uint n = 0; n < inputNodes.size(); ++n)
+		{
+			Node* inputNode = inputNodes[n];
+
+			std::vector<Node*> inputLeafNodes = inputNode->GetLeaves();
+			for(uint m = 0; m < jackknifeNodes.size(); ++m)
+			{
+				Node* jackknifeNode = jackknifeNodes.at(m);
+
+				std::vector<Node*> jackknifeLeafNodes = jackknifeNode->GetLeaves();
+
+				// check if nodes have the same children (i.e., we have an identical split of the taxa)
+				if(inputLeafNodes.size() == jackknifeLeafNodes.size())
+				{
+					bool bIndenticalSplit = true;
+					if(inputLeafNodes.size() != 0)
+					{
+						// internal node
+						for(uint x = 0; x < inputLeafNodes.size(); ++x)
+						{
+							Node* inputLeaf = inputLeafNodes[x];
+
+							bool bMatch = false;
+
+							for(uint y = 0; y < jackknifeLeafNodes.size(); ++y)
+							{
+								Node* jackknifeLeaf = jackknifeLeafNodes.at(y);
+								if(inputLeaf->GetName() == jackknifeLeaf->GetName())
+								{
+									bMatch = true;
+									break;
+								}
+							}
+
+							if(!bMatch)
+							{
+								bIndenticalSplit = false;
+								break;
+							}
+						}
+					}
+					else
+					{
+						// leaf node
+						bIndenticalSplit = (inputNode->GetName() == jackknifeNode->GetName());
+					}
+
+					if(bIndenticalSplit)
+						inputNode->SetJackknife(inputNode->GetJackknife() + 1);
+				}
+			}
+		}
+	}
+
+	for(uint i = 0; i < inputNodes.size(); ++i)
+	{
+		Node* inputNode = inputNodes[i];
+
+		if(!inputNode->IsLeaf())
+		{
+			double jackknife = inputNode->GetJackknife();			
+			jackknife = int((jackknife/jackknifeTrees.size())*100 + 0.5);			
+			inputNode->SetJackknife((int)jackknife);
+		}
+		else
+		{
+			inputNode->SetJackknife(Node::NO_DISTANCE);
+		}
 	}
 
 	return true;
@@ -1131,7 +1312,7 @@ double DiversityCalculator::Extents(const std::vector<double>& com1, const std::
 	return extents;
 }
 
-bool DiversityCalculator::All(double threshold, const std::string& outputFile)
+bool DiversityCalculator::All(double threshold, const std::string& outputFile, const std::string& clusteringMethod)
 {
 	std::vector<std::string> dissFiles;
 	std::vector<std::string> calculatorLabels;
@@ -1149,7 +1330,7 @@ bool DiversityCalculator::All(double threshold, const std::string& outputFile)
 		std::cout << "Processing Weighted " << calculatorStr << " calculator..." << std::endl;
 
 		SetCalculator(calculatorStr);
-		if(!Dissimilarity("./" + calculatorStr + ".cluster.diss"))
+		if(!Dissimilarity("./" + calculatorStr + ".cluster.diss", clusteringMethod))
 			return false;
 
 		dissFiles.push_back("./" + calculatorStr + ".cluster.diss");
@@ -1166,7 +1347,7 @@ bool DiversityCalculator::All(double threshold, const std::string& outputFile)
 		std::cout << "Processing Unweighted " << calculatorStr << " calculator..." << std::endl;
 
 		SetCalculator(calculatorStr);
-		if(!Dissimilarity("./u" + calculatorStr + ".cluster.diss"))
+		if(!Dissimilarity("./u" + calculatorStr + ".cluster.diss", clusteringMethod))
 			return false;
 
 		dissFiles.push_back("./u" + calculatorStr + ".cluster.diss");

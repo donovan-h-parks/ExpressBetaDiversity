@@ -1,6 +1,0 @@
-	Attribute 1
-A	3
-B	1
-C	-
-D	1
-E	3

@@ -50,10 +50,10 @@ public:
 	bool IsGood() const { return m_bGood; }
 
 	/** Calculate dissimilarity between all pairs of samples. */
-	bool Dissimilarity(const std::string& dissFile);
+	bool Dissimilarity(const std::string& outputPrefix, const std::string& clusteringMethod, uint jackknifeRep = 0, uint seqsToDraw = 0);
 
 	/** Apply all calculators. */
-	bool All(double threshold, const std::string& outputFile);
+	bool All(double threshold, const std::string& outputFile, const std::string& clusteringMethod);
 
 	/** Check if a measure is weighted. */
 	static bool IsWeighted(const std::string& name);
@@ -75,7 +75,7 @@ private:
 	bool InitDataVectorizer();
 
 	/** Calculate data vectors . */
-	void CalculateDataVectors(uint startIndex, uint numSamples, std::vector< std::vector<double> >& dataVec);
+	void CalculateDataVectors(uint startIndex, uint numSamples, std::vector< std::vector<double> >& dataVec, uint seqsToDraw);
 
 	/** Calculate minimum and maximum value in each column. */
 	void CalculateColumnExtents();
@@ -100,6 +100,15 @@ private:
 
 	/** Initialize list of unweighted calculators. */
 	static void InitUnweightedCalculators();
+
+	/** Read dissimilarity matrix. */
+	bool ReadMatrix(const std::string& file, Matrix& dissMatrix, std::vector<std::string>& labels);
+
+	/** Create dissimilarity matrix. */
+	bool CreateDissimilarityMatrix(const std::string& dissFile, Tree<Node>* tree, const std::string& clusteringMethod, uint seqsToDraw = 0);
+
+	/** Create jackknife tree.*/
+	bool JackknifeTree(Tree<Node>* inputTree, const std::vector<Tree<Node>*>& jackknifeTrees);
 
 	static double BrayCurtis(const std::vector<double>& com1, const std::vector<double>& com2, uint i, uint j);
 	static double Canberra(const std::vector<double>& com1, const std::vector<double>& com2, uint i, uint j);

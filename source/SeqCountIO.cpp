@@ -23,105 +23,7 @@
 #include "Precompiled.hpp"
 
 #include "SeqCountIO.hpp"
-
-#define white_space(c) ((c) == ' ' || (c) == '\t')
-#define valid_digit(c) ((c) >= '0' && (c) <= '9')
-
-double fast_atof(const char *p)
-{
-    int frac = 0;
-    double sign, value, scale;
-
-    // Skip leading white space, if any.
-
-    while (white_space(*p) ) {
-        p += 1;
-    }
-
-    // Get sign, if any.
-
-    sign = 1.0;
-    if (*p == '-') {
-        sign = -1.0;
-        p += 1;
-
-    } else if (*p == '+') {
-        p += 1;
-    }
-
-    // Get digits before decimal point or exponent, if any.
-
-    value = 0.0;
-    while (valid_digit(*p)) {
-        value = value * 10.0 + (*p - '0');
-        p += 1;
-    }
-
-    // Get digits after decimal point, if any.
-
-    if (*p == '.') {
-        double pow10 = 10.0;
-        p += 1;
-
-        while (valid_digit(*p)) {
-            value += (*p - '0') / pow10;
-            pow10 *= 10.0;
-            p += 1;
-        }
-    }
-
-    // Handle exponent, if any.
-
-    scale = 1.0;
-    if ((*p == 'e') || (*p == 'E')) {
-        unsigned int expon;
-        p += 1;
-
-        // Get sign of exponent, if any.
-
-        frac = 0;
-        if (*p == '-') {
-            frac = 1;
-            p += 1;
-
-        } else if (*p == '+') {
-            p += 1;
-        }
-
-        // Get digits of exponent, if any.
-
-        expon = 0;
-        while (valid_digit(*p)) {
-            expon = expon * 10 + (*p - '0');
-            p += 1;
-        }
-        if (expon > 308) expon = 308;
-
-        // Calculate scaling factor.
-
-        while (expon >= 50) { scale *= 1E50; expon -= 50; }
-        while (expon >=  8) { scale *= 1E8;  expon -=  8; }
-        while (expon >   0) { scale *= 10.0; expon -=  1; }
-    }
-
-    // Return signed and scaled doubleing point result.
-
-    return sign * (frac ? (value / scale) : (value * scale));
-}
-
-std::string TrimStr(const std::string& Src, const std::string& c = " \r\n")
-{
-	int p2 = Src.find_last_not_of(c);
-
-	if (p2 == std::string::npos) 
-		return std::string();
-
-	int p1 = Src.find_first_not_of(c);
-	if (p1 == std::string::npos) 
-		p1 = 0;
-
-	return Src.substr(p1, (p2-p1)+1);
-}
+#include "StringTools.hpp"
 
 SeqCountIO::SeqCountIO() 
 {
@@ -162,7 +64,7 @@ bool SeqCountIO::Read(const std::string& filename)
 	while(std::getline(ss, token, '\t'))
 	{
 		if(!token.empty())
-			m_seqs.push_back(TrimStr(token));
+			m_seqs.push_back(StringTools::RemoveSurroundingWhiteSpaces(token));
 	}
 
 	// get number of samples and starting index of each sample line
@@ -187,7 +89,7 @@ bool SeqCountIO::Read(const std::string& filename)
 	m_file.clear();
 
 	// allocate temporary buffer for reading lines
-	m_buffer = new char[longestLine];
+	m_buffer = new char[(uint)longestLine];
 
 	// ensure we read the entire last line of the file
 	if(!bEndOfLineTerminator)
@@ -204,7 +106,7 @@ bool SeqCountIO::Read(const std::string& filename)
 	return true;
 }
 
-void SeqCountIO::GetData(uint index, std::vector<double>& count, double& totalNumSeq)
+void SeqCountIO::GetData(uint index, std::vector<double>& count, double& totalNumSeq, uint seqsToDraw)
 {
 	// read the ith sample from file
 	m_file.seekg(m_sampleStreamPos[index]);
@@ -224,15 +126,36 @@ void SeqCountIO::GetData(uint index, std::vector<double>& count, double& totalNu
 	count.reserve(m_seqs.size());
 	do
 	{
-		char* tabPos = (char *)memchr(curPos, '\t', charsInLine);
+		char* tabPos = (char *)memchr(curPos, '\t', (size_t)charsInLine);
 		if(tabPos != NULL)
 			tabPos[0] = 0;
 
-		double numSeq = (double)fast_atof(curPos);
+		double numSeq = (double)StringTools::ToDouble(curPos);
 		count.push_back(numSeq);
 		totalNumSeq += numSeq;		
 
 		charsInLine -= (tabPos - curPos) + 1;
 		curPos = tabPos + 1;
 	}while(count.size() != m_seqs.size());
+
+	// jackknife data vector
+	if(seqsToDraw != 0)
+	{	
+		std::vector<double> jackknife(m_seqs.size(), 0);
+		for(uint i = 0; i < seqsToDraw; ++i)
+		{
+			double r = rand()/(RAND_MAX/totalNumSeq);
+
+			double seqCount = 0;
+			for(uint j = 0; j < count.size(); ++j)
+			{
+				seqCount += count.at(j);
+				if(r <= seqCount)
+					jackknife.at(j) += 1;
+			}
+		}
+
+		totalNumSeq = seqsToDraw;
+		count = jackknife;
+	}
 }

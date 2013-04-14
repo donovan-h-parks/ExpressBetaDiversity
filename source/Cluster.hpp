@@ -1,28 +1,27 @@
 //=======================================================================
 // Author: Donovan Parks
 //
-// Copyright 2009 Donovan Parks
+// Copyright 2011 Donovan Parks
 //
-// This file is part of Chameleon.
+// This file is part of ExpressBetaDiversity.
 //
-// Chameleon is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// ExpressBetaDiversity is free software: you can redistribute it 
+// and/or modify it under the terms of the GNU General Public License 
+// as published by the Free Software Foundation, either version 3 of 
+// the License, or (at your option) any later version.
 //
-// Chameleon is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// ExpressBetaDiversity is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Chameleon. If not, see <http://www.gnu.org/licenses/>.
+// along with ExpressBetaDiversity. If not, see 
+// <http://www.gnu.org/licenses/>.
 //=======================================================================
 
 #ifndef _CLUSTER_
 #define _CLUSTER_
-
-#include "Precompiled.hpp"
 
 #include "DataTypes.hpp"
 
@@ -33,7 +32,7 @@ class Cluster
 {
 public:
 		/** Type of clustering to perform. */
-	enum CLUSTER_TYPE { COMPLETE_LINKAGE, SINGLE_LINKAGE, AVERAGE_LINKAGE };
+	enum CLUSTER_TYPE { COMPLETE_LINKAGE, SINGLE_LINKAGE, AVERAGE_LINKAGE, NEIGHBOUR_JOINING };
 
 public:
 	/** Constructor. */
@@ -84,6 +83,14 @@ public:
 	{
 		Clustering(AVERAGE_LINKAGE, distMatrix, labels, tree);
 	}
+
+	/** 
+	 * @brief Build neighbour joining (NJ) tree from a distance matrix.
+	 * @param distMatrix Matrix indicating pairwise distance between objects.
+	 * @param labels Labels identifying each row/col of the distance matrix.
+	 * @param tree Resulting NJ tree.
+	 */
+	static void NJ(const Matrix& distMatrix, const std::vector<std::string>& labels, Tree<Node>* tree);
 
 protected:
 	static void FindNearestClusters(Matrix& distMatrix, uint& row, uint& col);
