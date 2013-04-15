@@ -1330,7 +1330,7 @@ bool DiversityCalculator::All(double threshold, const std::string& outputFile, c
 		std::cout << "Processing Weighted " << calculatorStr << " calculator..." << std::endl;
 
 		SetCalculator(calculatorStr);
-		if(!Dissimilarity("./" + calculatorStr + ".cluster.diss", clusteringMethod))
+		if(!Dissimilarity("./" + calculatorStr + ".cluster", clusteringMethod))
 			return false;
 
 		dissFiles.push_back("./" + calculatorStr + ".cluster.diss");
@@ -1347,7 +1347,7 @@ bool DiversityCalculator::All(double threshold, const std::string& outputFile, c
 		std::cout << "Processing Unweighted " << calculatorStr << " calculator..." << std::endl;
 
 		SetCalculator(calculatorStr);
-		if(!Dissimilarity("./u" + calculatorStr + ".cluster.diss", clusteringMethod))
+		if(!Dissimilarity("./u" + calculatorStr + ".cluster", clusteringMethod))
 			return false;
 
 		dissFiles.push_back("./u" + calculatorStr + ".cluster.diss");

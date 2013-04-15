@@ -151,7 +151,10 @@ void SeqCountIO::GetData(uint index, std::vector<double>& count, double& totalNu
 			{
 				seqCount += count.at(j);
 				if(r <= seqCount)
+				{
 					jackknife.at(j) += 1;
+					break;
+				}
 			}
 		}
 

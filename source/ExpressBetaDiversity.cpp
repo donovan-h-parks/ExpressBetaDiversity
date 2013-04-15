@@ -136,6 +136,33 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		return false;
 	}
 
+	if(bUnitTests)
+	{
+		std::cout << std::endl;
+
+		UnitTests unitTests;
+		if(unitTests.Execute())
+			std::cout << "Passed all unit tests." << std::endl;
+		else
+			std::cerr << "Failed unit test." << std::endl;
+
+		return false;
+	}
+
+	if(seqCountFile.empty())
+	{
+		std::cout << std::endl;
+		std::cout << "  [Error] The --seq-count-file (-s) flag must be specified." << std::endl;
+		return false;
+	}
+
+	if(!bSampleSize && treeFile.empty())
+	{
+		std::cout << std::endl;
+		std::cout << "  [Error] The --tree-file (-t) flag must be specified." << std::endl;
+		return false;
+	}
+
 	if(jackknifeRep != 0 && seqToDraw == 0)
 	{
 		std::cout << std::endl;
@@ -182,19 +209,6 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	{
 		std::cout << std::endl;
 		std::cout << "  [Error] The --max-data-vecs (-v) parameter must be a multiple of 2." << std::endl;
-		return false;
-	}
-
-	if(bUnitTests)
-	{
-		std::cout << std::endl;
-
-		UnitTests unitTests;
-		if(unitTests.Execute())
-			std::cout << "Passed all unit tests." << std::endl;
-		else
-			std::cerr << "Failed unit test." << std::endl;
-
 		return false;
 	}
 
