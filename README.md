@@ -24,12 +24,12 @@ Installation:
 
 EBD is a command-line program written in C++.  To install EBD, download 
 and uncompress it with the unzip command:
-  unzip EBD_1_0_1.zip
+  unzip EBD_1_0_4.zip
 
 To compile EBD on OSX or Linux simply type 'make' from within the source 
 directory of EBD. The resulting executable will be in the bin directory. 
 A precompiled executables for Windows is provided in the bin directory. 
-Please note that even under Windows, EBD must be run from the command-line 
+Please note that under Windows, EBD must be run from the command-line 
 (i.e., the DOS prompt).
 
 
@@ -97,22 +97,6 @@ software. The unit tests can be run with:
 The software should not be used if any of the unit tests fail.
 
 
-Projecting a phylogenetic tree:
--------------------------------------------------------------------------------
-
-EBD assumes a tree spans only the taxa present in your set of samples. The
-program ProjectTree can be used to ensure this is true. It can be run as 
-follows:
-
-  ./ProjectTree <seq-count-file> <input tree> <output tree>
-
-The format of the <seq-count-file> is described in the next section (Input file
-formats). It is the same file used by EBD to specify the distribution of 
-sequences within each sample. The input tree must contain all taxa specified
-in the sequence count file. ProjectTree prunes the tree to remove any
-taxa not present in the sequence count file.
-
-
 Input file formats:
 -------------------------------------------------------------------------------
 
@@ -144,17 +128,17 @@ other sequence/OTU types.
 Example input files are avaliable in the unit-tests directory. 
 
 
-Converting from QIIME/UniFrac/biom file formats:
+Converting from QIIME/UniFrac file formats:
 -------------------------------------------------------------------------------
 
 The script convertToEBD.py in the scripts directory can be used to 
-convert sparse or dense biom-format OTU tables into the format
-required by EBD. The biom-format is used by many popular services
+convert sparse or dense UniFrac-style OTU tables into the format
+required by EBD. The UniFrac format is used by many popular services
 including the UniFrac web services and QIIME. EBD uses a different
 input file format in order to efficently handle data sets consisting
 of thousands of samples. The script can be run as follows:
 
-  ./convertUniFracToEBD.py <input biom file> <ouput EBD file>
+  ./convertUniFracToEBD.py <input file> <ouput file>
 
 
 Dissimilarity output file format:

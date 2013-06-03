@@ -127,7 +127,7 @@ bool DiversityCalculator::ReadTreeFile(const std::string& treeFile)
 
 		if(m_bVerbose)
 		{
-			std::cout << "  Calculating a phylogenetic beta-diversity measure." << std::endl;
+			std::cout << "  Calculating phylogenetic beta-diversity measure." << std::endl;
 			std::cout << "  Nodes in input tree: " << m_tree->GetRootNode()->GetNodes().size() << std::endl;
 			std::cout << "  Leaves in input tree: " << m_tree->GetRootNode()->GetLeaves().size() << std::endl;
 			std::cout << "  Time to read tree: " << ( readTreeEnd - readTreeStart ) / (double)CLOCKS_PER_SEC << " s" << std::endl;

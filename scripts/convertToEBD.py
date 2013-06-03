@@ -104,8 +104,8 @@ def doWork(args):
 	print 'EBD formatted OTU data written to: ' + args.outputFile
 	
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument('inputFile', help='Input OTU table in sparse or dense biom (UniFrac) format.')
+	parser = argparse.ArgumentParser(description="Convert UniFrac environment files for use with EBD.")
+	parser.add_argument('inputFile', help='Input OTU table in sparse or dense UniFrac format.')
 	parser.add_argument('outputFile', help='Output OTU table in EBD format.')
 
 	args = parser.parse_args()        
