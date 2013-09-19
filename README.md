@@ -39,7 +39,7 @@ Program usage:
 -------------------------------------------------------------------------------
 ```
 Usage: EBD [OPTIONS]
-Calculates taxon- and phylogenetic-basec beta diversity measures.
+Calculates taxon- and phylogenetic-based beta diversity measures.
 
 Options:
  -h, --help           Produce help message.
