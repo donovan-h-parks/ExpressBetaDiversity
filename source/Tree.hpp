@@ -25,6 +25,8 @@
 
 #include "Precompiled.hpp"
 
+#include "Node.hpp"
+
 /**
  * @brief Build a new tree.
  */
