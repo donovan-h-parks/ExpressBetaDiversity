@@ -47,7 +47,7 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	opts >> GetOpt::OptionPresent('u', "unit-tests", bUnitTests);
 	opts >> GetOpt::Option('t', "tree-file", treeFile);
 	opts >> GetOpt::Option('s', "seq-count-file", seqCountFile);
-	opts >> GetOpt::Option('p', "output-prefix", outputPrefix);
+	opts >> GetOpt::Option('p', "output-prefix", outputPrefix, "output");
 	opts >> GetOpt::Option('g', "clustering", clusteringMethod, "UPGMA");
 	opts >> GetOpt::Option('j', "jackknife", jackknifeRepStr, "0");
 	opts >> GetOpt::Option('d', "seqs-to-draw", seqToDrawStr, "0");
@@ -80,7 +80,7 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		std::cout << std::endl;
 		std::cout << "  -t, --tree-file      Tree in Newick format (if phylogenetic beta-diversity is desired)." << std::endl;
 		std::cout << "  -s, --seq-count-file Sequence count file." << std::endl;
-		std::cout << "  -p, --output-prefix  Output prefix." << std::endl;
+		std::cout << "  -p, --output-prefix  Output prefix (default = output)." << std::endl;
 		std::cout << std::endl;
 		std::cout << "  -g, --clustering     Hierarchical clustering method: UPGMA, SingleLinkage, CompleteLinkage, NJ (default = UPGMA)." << std::endl;
 		std::cout << std::endl;
@@ -160,6 +160,13 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	{
 		std::cout << std::endl;
 		std::cout << "  [Error] The --tree-file (-t) flag must be specified." << std::endl;
+		return false;
+	}
+
+	if(!seqCountFile.empty() && !treeFile.empty() && !bAll && calcStr.empty())
+	{
+		std::cout << std::endl;
+		std::cout << "  [Error] Either the --calculator (-c) or --all (-a) flag must be specified along with a sequence and tree file." << std::endl;
 		return false;
 	}
 

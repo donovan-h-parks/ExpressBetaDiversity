@@ -46,7 +46,7 @@ Options:
 
  -t, --tree-file      Tree in Newick format (if phylogenetic beta-diversity is desired).
  -s, --seq-count-file Sequence count file.
- -p, --output-prefix  Output prefix.
+ -p, --output-prefix  Output prefix (default = output).
  
  -g, --clustering     Hierarchical clustering method: UPGMA, SingleLinkage, CompleteLinkage, NJ (default = UPGMA).
  
