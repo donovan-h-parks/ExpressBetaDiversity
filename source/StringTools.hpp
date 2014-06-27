@@ -148,7 +148,7 @@ public:
 	static std::string ToString(T t, int precision)
 	{
 		std::ostringstream oss;
-		oss << setprecision(precision) << t;
+		oss << std::setprecision(precision) << t;
 		return oss.str();
 	}
 
