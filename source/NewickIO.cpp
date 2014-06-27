@@ -66,7 +66,7 @@ void NewickIO::ParseNodeInfo(Node* node, std::string& nodeInfo)
 
 	// check for name and/or support value
 	int lastP = nodeInfo.rfind('\'');
-	int firstP = nodeInfo.rfind('\'');
+	int firstP = nodeInfo.find('\'');
 	if(firstP != std::string::npos)
 	{
 		name = nodeInfo.substr(firstP+1, lastP-firstP-1);
@@ -90,7 +90,15 @@ void NewickIO::ParseNodeInfo(Node* node, std::string& nodeInfo)
 		node->SetName(name);
 
 	if(!length.empty())
+	{
 		node->SetDistanceToParent((double)::atof(length.c_str()));
+	}
+	else if(!node->IsRoot())
+	{
+		// assume branches with missing branch length information has a length of zero
+		std::cerr << "[Warning] Branch found with no length information. Assuming branch has zero length." << std::endl;
+		node->SetDistanceToParent(0.0);
+	}
 }
 
 bool NewickIO::ParseNewickString(Tree<Node>& tree, const std::string& newickStr)

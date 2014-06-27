@@ -280,9 +280,11 @@ void Tree<N>::Project(const std::vector<std::string>& leavesToRetain)
 	// mark all internal node as active so we can distinguish them from true leaf nodes
 	std::vector<N*> nodes = GetNodes(m_root);
 	for(uint i = 0; i < nodes.size(); ++i)
+	{
 		nodes[i]->SetCounter(!nodes[i]->IsLeaf());
+	}
 
-	// 1. Removes leave nodes from the tree.
+	// 1. Removes leaf nodes from the tree.
 	std::set<std::string> leavesToRetainSet;
 	for(uint i = 0; i < leavesToRetain.size(); ++i)
 		leavesToRetainSet.insert(leavesToRetain[i]);
