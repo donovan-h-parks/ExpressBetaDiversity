@@ -70,7 +70,7 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	if(bShowHelp || argc <= 1) 
 	{		
 		std::cout << std::endl;
-		std::cout << "Express Beta Diversity (EBD) v1.0.4 (May 24, 2013)" << std::endl;
+		std::cout << "Express Beta Diversity (EBD) v1.0.5 (June 27, 2014)" << std::endl;
 		std::cout << "  by Donovan Parks (donovan.parks@gmail.com) and Rob Beiko (beiko@cs.dal.ca)" << std::endl;
 		std::cout << std::endl;
 		std::cout << " Usage: " << opts.app_name() << " -t <tree file> -s <seq file> -c <calculator>" << std::endl;
