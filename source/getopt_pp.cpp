@@ -24,10 +24,6 @@ GetOpt_pp:	Yet another C++ version of getopt.
 
 #include <stdio.h>
 
-#if __APPLE__
-extern char** environ;
-#endif
-
 namespace GetOpt {
 
 const char GetOpt_pp::EMPTY_OPTION = 0;
@@ -85,39 +81,6 @@ GETOPT_INLINE void GetOpt_pp::_parse(int argc, char* argv[])
 	_last = _Option::OK;	// TODO: IMPROVE!!
 }
 
-GETOPT_INLINE void GetOpt_pp::_parse_env()
-{
-	// this will be optimized in version 3
-	std::string var_name;
-	std::string var_value;
-	size_t var=0;
-	std::string::size_type pos;
-	OptionData* data;
-	
-	while (environ[var] != NULL)
-	{
-		var_name = environ[var];
-		pos = var_name.find('=');
-		
-		if (pos != std::string::npos)
-		{
-			var_value = var_name.substr(pos+1);
-			var_name = var_name.substr(0, pos);
-			
-			if (_longOps.find(var_name) == _longOps.end())
-			{
-				data = &_longOps[var_name];
-				data->args.push_back(var_value);
-				data->flags = OptionData::Envir;
-			}
-		}
-		else
-			(data = &_longOps[var_name])->flags = OptionData::Envir;
-			
-		var++;
-	}
-}
-
 GETOPT_INLINE GetOpt_pp::GetOpt_pp(int argc, char* argv[])
 	: _exc(std::ios_base::goodbit)
 {
@@ -129,7 +92,6 @@ GETOPT_INLINE GetOpt_pp::GetOpt_pp(int argc, char* argv[], _EnvTag)
 {
 	_init_flags();
 	_parse(argc, argv);	
-	_parse_env();
 }
 
 GETOPT_INLINE GetOpt_pp& GetOpt_pp::operator >> (const _Option& opt)
