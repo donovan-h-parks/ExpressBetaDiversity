@@ -70,7 +70,7 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	if(bShowHelp || argc <= 1) 
 	{		
 		std::cout << std::endl;
-		std::cout << "Express Beta Diversity (EBD) v1.0.5 (June 27, 2014)" << std::endl;
+		std::cout << "Express Beta Diversity (EBD) v1.0.6 (October 5, 2014)" << std::endl;
 		std::cout << "  by Donovan Parks (donovan.parks@gmail.com) and Rob Beiko (beiko@cs.dal.ca)" << std::endl;
 		std::cout << std::endl;
 		std::cout << " Usage: " << opts.app_name() << " -t <tree file> -s <seq file> -c <calculator>" << std::endl;
@@ -102,8 +102,8 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		std::cout << std::endl;
 		std::cout << "  -v, --verbose        Provide additional information on program execution." << std::endl;
 							
-    return false;
-  }
+		return false;
+	}
 	else if(bShowCalc)
 	{
 		std::cout << std::endl;
@@ -156,17 +156,15 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		return false;
 	}
 
-	if(!bSampleSize && treeFile.empty())
+	if(bSampleSize)
 	{
-		std::cout << std::endl;
-		std::cout << "  [Error] The --tree-file (-t) flag must be specified." << std::endl;
-		return false;
+		return true;
 	}
 
-	if(!seqCountFile.empty() && !treeFile.empty() && !bAll && calcStr.empty())
+	if(!seqCountFile.empty() && !bAll && calcStr.empty())
 	{
 		std::cout << std::endl;
-		std::cout << "  [Error] Either the --calculator (-c) or --all (-a) flag must be specified along with a sequence and tree file." << std::endl;
+		std::cout << "  [Error] Either the --calculator (-c) or --all (-a) flag must be specified along with a sequence and (optional) tree file." << std::endl;
 		return false;
 	}
 
@@ -216,6 +214,17 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	{
 		std::cout << std::endl;
 		std::cout << "  [Error] The --max-data-vecs (-v) parameter must be a multiple of 2." << std::endl;
+		return false;
+	}
+
+	if(calcStr == "Complete tree" || calcStr == "CompleteTree" || calcStr == "CT" 
+		|| calcStr == "Mean nearest neighbour distance" || calcStr == "MNND" 
+		|| calcStr == "Mean phylogenetic distance" || calcStr == "MPD" 
+		|| calcStr == "Normalized weighted UniFrac" || calcStr == "NWU" 
+		|| calcStr == "NormalizedWeightedUniFrac" || calcStr == "Normalized Weighted UniFrac")
+	{
+		std::cout << std::endl;
+		std::cout << "  [Error] A tree file must be specified when using the specified calculator." << std::endl;
 		return false;
 	}
 

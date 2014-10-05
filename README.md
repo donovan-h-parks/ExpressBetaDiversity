@@ -25,7 +25,7 @@ Installation:
 EBD is a command-line program written in C++.  To install EBD, download 
 and uncompress it with the unzip command:
 ```
-  unzip EBD_1_0_5.zip
+  unzip EBD_1_0_6.zip
 ```
 
 To compile EBD on OSX or Linux simply type 'make' from within the source 
@@ -171,6 +171,10 @@ C	2	3
 ```
 The first line indicates that there are 3 samples. The dissimilarity between 
 samples A and B is 1, A and C is 2, and B and C is 3.
+
+An EBD dissimilarity matrix can be converted to a full dissimilarity matrix 
+using the convertToFullMatrix.py script in the scripts directory. 
+
 
 Clustering output file format:
 -------------------------------------------------------------------------------
