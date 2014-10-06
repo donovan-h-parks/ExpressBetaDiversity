@@ -25,7 +25,7 @@ Installation:
 EBD is a command-line program written in C++.  To install EBD, download 
 and uncompress it with the unzip command:
 ```
-  unzip EBD_1_0_6.zip
+  unzip 1_0_6.zip
 ```
 
 To compile EBD on OSX or Linux simply type 'make' from within the source 
@@ -38,7 +38,7 @@ Please note that under Windows, EBD must be run from the command-line
 Program usage:
 -------------------------------------------------------------------------------
 ```
-Usage: EBD [OPTIONS]
+Usage: ExpressBetaDiversity [OPTIONS]
 Calculates taxon- and phylogenetic-based beta diversity measures.
 
 Options:
