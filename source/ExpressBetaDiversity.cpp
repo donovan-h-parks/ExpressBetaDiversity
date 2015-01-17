@@ -5,18 +5,18 @@
 //
 // This file is part of ExpressBetaDiversity.
 //
-// ExpressBetaDiversity is free software: you can redistribute it 
-// and/or modify it under the terms of the GNU General Public License 
-// as published by the Free Software Foundation, either version 3 of 
+// ExpressBetaDiversity is free software: you can redistribute it
+// and/or modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation, either version 3 of
 // the License, or (at your option) any later version.
 //
-// ExpressBetaDiversity is distributed in the hope that it will be 
+// ExpressBetaDiversity is distributed in the hope that it will be
 // useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 // of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ExpressBetaDiversity. If not, see 
+// along with ExpressBetaDiversity. If not, see
 // <http://www.gnu.org/licenses/>.
 //=======================================================================
 
@@ -30,9 +30,9 @@
 
 #include "UnitTests.hpp"
 
-bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string& seqCountFile, std::string& outputPrefix, 
+bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string& seqCountFile, std::string& outputPrefix,
 											std::string& clusteringMethod, uint& jackknifeRep, uint& seqToDraw, bool& bSampleSize,
-											std::string& calcStr, uint& maxDataVecs, bool& bWeighted, bool& bMRCA, bool& bStrictMRCA, bool& bCount, 
+											std::string& calcStr, uint& maxDataVecs, bool& bWeighted, bool& bMRCA, bool& bStrictMRCA, bool& bCount,
 											bool& bAll, double& threshold, std::string& outputFile, bool& bVerbose)
 {
 	bool bShowHelp, bShowCalc, bUnitTests;
@@ -67,10 +67,10 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 	jackknifeRep = atoi(jackknifeRepStr.c_str());
 	seqToDraw = atoi(seqToDrawStr.c_str());
 
-	if(bShowHelp || argc <= 1) 
-	{		
+	if(bShowHelp || argc <= 1)
+	{
 		std::cout << std::endl;
-		std::cout << "Express Beta Diversity (EBD) v1.0.6 (October 5, 2014)" << std::endl;
+		std::cout << "Express Beta Diversity (EBD) v1.0.7 (Jan 18, 2015)" << std::endl;
 		std::cout << "  by Donovan Parks (donovan.parks@gmail.com) and Rob Beiko (beiko@cs.dal.ca)" << std::endl;
 		std::cout << std::endl;
 		std::cout << " Usage: " << opts.app_name() << " -t <tree file> -s <seq file> -c <calculator>" << std::endl;
@@ -101,7 +101,7 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		std::cout << "  -o, --output-file    Output file for cluster of calculators (default = clusters.txt)." << std::endl;
 		std::cout << std::endl;
 		std::cout << "  -v, --verbose        Provide additional information on program execution." << std::endl;
-							
+
 		return false;
 	}
 	else if(bShowCalc)
@@ -118,18 +118,18 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		std::cout << "  Gower" << std::endl;
 		std::cout << "  Hellinger" << std::endl;
 		std::cout << "  Kulczynski (aka: Kulczynski-Cody, Sokal-Sneath)" << std::endl;
-		std::cout << "  Lennon compositional difference (Lennon)" << std::endl;		
+		std::cout << "  Lennon compositional difference (Lennon)" << std::endl;
 		std::cout << "  Manhattan (aka: taxicab, city-block, unnormalized weighted UniFrac)" << std::endl;
 		std::cout << "  Mean nearest neighbour distance (MNND)" << std::endl;
 		std::cout << "  Mean phylogenetic distance (MPD)" << std::endl;
 		std::cout << "  Morisita-Horn" << std::endl;
 		std::cout << "  Normalized weighted UniFrac (NWU) (Identical to, but slower, than the Bray-Curtis calculator)" << std::endl;
-		std::cout << "  Pearson (i.e., Pearson product-moment correlation coefficient)" << std::endl;		
+		std::cout << "  Pearson (i.e., Pearson product-moment correlation coefficient)" << std::endl;
 		std::cout << "  Rao's Hp (RaoHp)" << std::endl;
 		std::cout << "  Soergel (aka: Jaccard, unweighted UniFrac, Ruzicka, Marczewski-Steinhaus, percentage remoteness)" << std::endl;
 		std::cout << "  Tamas coefficient (TC) (aka: simple matching coefficent)" << std::endl;
 		std::cout << "  Weighted correlation (WC)" << std::endl;
-		std::cout << "  Whittaker (aka: Whittaker index of association)" << std::endl;	
+		std::cout << "  Whittaker (aka: Whittaker index of association)" << std::endl;
 		std::cout << "  Yue-Clayton (aka: similarity ratio)" << std::endl;
 		std::cout << std::endl;
 
@@ -217,11 +217,11 @@ bool ParseCommandLine(int argc, char* argv[], std::string& treeFile, std::string
 		return false;
 	}
 
-	if(calcStr == "Complete tree" || calcStr == "CompleteTree" || calcStr == "CT" 
-		|| calcStr == "Mean nearest neighbour distance" || calcStr == "MNND" 
-		|| calcStr == "Mean phylogenetic distance" || calcStr == "MPD" 
-		|| calcStr == "Normalized weighted UniFrac" || calcStr == "NWU" 
-		|| calcStr == "NormalizedWeightedUniFrac" || calcStr == "Normalized Weighted UniFrac")
+	if(treeFile.empty() && (calcStr == "Complete tree" || calcStr == "CompleteTree" || calcStr == "CT"
+		|| calcStr == "Mean nearest neighbour distance" || calcStr == "MNND"
+		|| calcStr == "Mean phylogenetic distance" || calcStr == "MPD"
+		|| calcStr == "Normalized weighted UniFrac" || calcStr == "NWU"
+		|| calcStr == "NormalizedWeightedUniFrac" || calcStr == "Normalized Weighted UniFrac"))
 	{
 		std::cout << std::endl;
 		std::cout << "  [Error] A tree file must be specified when using the specified calculator." << std::endl;
@@ -255,9 +255,9 @@ int main(int argc, char* argv[])
 	bool bAll;
 	double threshold;
 	std::string outputFile;
-	if(!ParseCommandLine(argc, argv, treeFile, seqCountFile, outputPrefix, clusteringMethod, 
-												jackknifeRep, seqToDraw, bSampleSize, 
-												calcStr, maxDataVecs, bWeighted, bMRCA, bStrictMRCA, 
+	if(!ParseCommandLine(argc, argv, treeFile, seqCountFile, outputPrefix, clusteringMethod,
+												jackknifeRep, seqToDraw, bSampleSize,
+												calcStr, maxDataVecs, bWeighted, bMRCA, bStrictMRCA,
 												bCount, bAll, threshold, outputFile, bVerbose))
 	{
 		return 0;
@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
 
 		std::string sampleWithMinSeqs;
 		double minSeqs = std::numeric_limits<double>::max();
-		
+
 		std::cout << "Sample Id" << '\t' << "Number of Sequences" << std::endl;
 		for(uint i = 0; i < sampleCountIO.GetNumSamples(); ++i)
 		{
@@ -315,12 +315,12 @@ int main(int argc, char* argv[])
 	// compute dissimilarity between all pairs of samples
 	if(!calculator.Dissimilarity(outputPrefix, clusteringMethod, jackknifeRep, seqToDraw))
 		return -1;
-	
+
 	std::clock_t timeEnd = std::clock();
 
 	if(bVerbose)
 	{
-		std::cout << "Total running time: " << ( timeEnd - timeStart ) / (double)CLOCKS_PER_SEC << " s" << std::endl; 
+		std::cout << "Total running time: " << ( timeEnd - timeStart ) / (double)CLOCKS_PER_SEC << " s" << std::endl;
 		std::cout << "Done." << std::endl;
 	}
 
