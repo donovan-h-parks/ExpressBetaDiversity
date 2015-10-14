@@ -155,7 +155,14 @@ of thousands of samples. The script can be run as follows:
 ```
 ./convertUniFracToEBD.py <input file> <ouput file>
 ```
-
+For reference, sparse UniFrac-style OTU tables look like this (3 columns tab delimited: sequence, sample, count).
+```
+leaf2	sample1	1
+leaf3	sample1	1
+leaf3	sample2	2
+leaf2	sample2	1
+leaf4	sample2	1
+```
 
 Dissimilarity output file format:
 -------------------------------------------------------------------------------
