@@ -232,4 +232,4 @@ donovan.parks@gmail.com
 Robert Beiko
 beiko@cs.dal.ca
 
-Program website: http://kiwi.cs.dal.ca/Software/EBD
+Program website: http://kiwi.cs.dal.ca/Software/ExpressBetaDiversity
