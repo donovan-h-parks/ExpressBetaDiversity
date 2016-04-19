@@ -153,7 +153,7 @@ including the UniFrac web services and QIIME. EBD uses a different
 input file format in order to efficently handle data sets consisting
 of thousands of samples. The script can be run as follows:
 ```
-./convertUniFracToEBD.py <input file> <ouput file>
+./convertToEBD.py <input file> <ouput file>
 ```
 For reference, sparse UniFrac-style OTU tables look like this (3 columns tab delimited: sequence, sample, count).
 ```
