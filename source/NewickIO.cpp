@@ -183,7 +183,7 @@ bool NewickIO::ParseNewickString(Tree<Node>& tree, const std::string& newickStr)
 void NewickIO::Write(Tree<Node>& tree, std::ostream& out) const
 {
 	// Checking the existence of specified file, and possibility to open it in write mode
-	assert(out != NULL);
+	assert(out);
 
 	out << "(";
 
