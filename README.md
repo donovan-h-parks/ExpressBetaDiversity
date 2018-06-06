@@ -25,7 +25,7 @@ Installation:
 EBD is a command-line program written in C++.  To install EBD, download 
 and uncompress it with the unzip command:
 ```
-  unzip 1_0_7.zip
+  unzip 1_0_8.zip
 ```
 
 To compile EBD on OSX or Linux simply type 'make' from within the source 
