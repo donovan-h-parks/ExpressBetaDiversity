@@ -31,7 +31,8 @@ __maintainer__ = 'Donovan Parks'
 __email__ = 'donovan.parks@gmail.com'
 __status__ = 'Development'
 
-
+import argparse
+import sys
 import numpy as np
 
 from matplotlib.ticker import MaxNLocator
@@ -65,7 +66,7 @@ class PcoaPlot(AbstractPlot):
 		
 		binIndices = []
 		for rowIndex, seqId in enumerate(seqIds):
-			if seqId in seqs.keys():
+			if seqId in list(seqs.keys()):
 				binIndices.append(rowIndex)
 
 		# plot sequence in bin
@@ -113,7 +114,7 @@ class PcoaPlot(AbstractPlot):
 			for line in axes.xaxis.get_ticklines(): 
 				line.set_color(self.axesColour)
 				
-			for loc, spine in axes.spines.iteritems():
+			for loc, spine in axes.spines.items():
 				if loc in ['right','top']:
 					spine.set_color('none') 
 				else:
@@ -123,8 +124,8 @@ class PcoaPlot(AbstractPlot):
 		self.savePlot(outputFile, dpi=options.dpi)
 		
 if __name__ == "__main__":
-	print __prog_name__ + ' v' + __version__ + ': ' + __prog_desc__
-	print '  by ' + __author__ + ' (' + __email__ + ')' + '\n'
+	print(__prog_name__ + ' v' + __version__ + ': ' + __prog_desc__)
+	print('  by ' + __author__ + ' (' + __email__ + ')' + '\n')
 
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('diss_matrix_file', help="dissimilarity matrix")
@@ -140,7 +141,7 @@ if __name__ == "__main__":
 		pcoaPlot = PcoaPlot(args)
 		pcoaPlot.plot(args.diss_matrix_file, args.width, args.height, args.image_type, args.output_file)
 	except SystemExit:
-		print "\nControlled exit resulting from an unrecoverable error or warning."
+		print("\nControlled exit resulting from an unrecoverable error or warning.")
 	except:
-		print "\nUnexpected error:", sys.exc_info()[0]
+		print("\nUnexpected error:", sys.exc_info()[0])
 	raise

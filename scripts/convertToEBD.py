@@ -38,7 +38,7 @@ def doWork(args):
 	sampleOTUs = {}
 	otuIds = set([])
 	if bSparse:
-		print 'Parsing OTU data in sparse biom-format.'
+		print('Parsing OTU data in sparse biom-format.')
 		for line in data:
 			if line[0] == '#' or line.strip() == '':
 				continue
@@ -56,7 +56,7 @@ def doWork(args):
 			sampleOTUs[sampleId][otuId] = sampleOTUs[sampleId].get(otuId, 0) + count
 			otuIds.add(otuId)
 	else:
-		print 'Parsing OTU data in dense biom-format.'
+		print('Parsing OTU data in dense biom-format.')
 		for line in data:
 			if '#OTU ID' in line or 'OTU ID' in line or '#otu id' in line or 'otu id' in line:
 				lineSplit = line.split('\t')
@@ -80,7 +80,7 @@ def doWork(args):
 			otuId = lineSplit[0]
 			counts = [float(x) for x in lineSplit[1:len(sampleIds)+1]]
 
-			for i in xrange(0, len(sampleIds)):
+			for i in range(0, len(sampleIds)):
 				sampleOTUs[sampleIds[i]][otuId] = counts[i]
 			otuIds.add(otuId)
 			
@@ -101,7 +101,7 @@ def doWork(args):
 				fout.write('\t0')
 		fout.write('\n')
 		
-	print 'EBD formatted OTU data written to: ' + args.outputFile
+	print('EBD formatted OTU data written to: ' + args.outputFile)
 	
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description="Convert UniFrac environment files for use with EBD.")
