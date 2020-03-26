@@ -29,10 +29,10 @@ def doWork(args):
 		fout.write('\t' + sampleName)
 	fout.write('\n')
 		
-	for r in xrange(len(matrix)):
+	for r in range(len(matrix)):
 		fout.write(sampleNames[r])
 		
-		for c in xrange(len(matrix)):
+		for c in range(len(matrix)):
 			if c < r:
 				fout.write('\t' + matrix[r][c].strip())
 			elif c == r:
@@ -42,7 +42,7 @@ def doWork(args):
 				
 		fout.write('\n')
 	
-	print 'Full matrix written to: ' + args.outputMatrix
+	print('Full matrix written to: ' + args.outputMatrix)
 	
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description="Convert Phylip lower-triangular matrix produced by EBD to full matrix.")
