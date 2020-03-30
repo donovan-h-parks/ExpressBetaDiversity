@@ -146,21 +146,21 @@ def main(argv):
 	for i in linkFiles:
 		i = regSuffix.sub(".d", i)
 		print("-include " + buildDir + "/" + i)
-	print()
+	print('')
 
 	# dependencies for link file
 	print(linkFile + ": \\")
 	for i in linkFiles:
 		i = regSuffix.sub(".d", i)
 		print("\t" + buildDir + "/" + i + " \\")
-	print()
+	print('')
 
 	# print out all files we need to link against
 	print(ruleTarget + ": " + linkFile + " \\")
 	for i in linkFiles:
 		i = regSuffix.sub(".o", i)
 		print("\t" + buildDir + "/" + i + " \\")
-	print()
+	print('')
 
 
 if __name__ == "__main__":
