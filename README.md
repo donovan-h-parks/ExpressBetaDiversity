@@ -1,6 +1,8 @@
 Express Beta Diversity (EBD)
 ============================
 
+[![Unmaintained](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)   
+
 Taxon- and phylogenetic-based beta diversity measures.
 
 -------------------------------------------------------------------------------
